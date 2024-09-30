@@ -25,7 +25,9 @@ public class JpaApplication implements CommandLineRunner
 	public void run(String... args) throws Exception {
 
 		//update();
-		delete();
+//		delete();
+
+		createDTO();
 		//Metodo de traer todos los usuarios
 		//List<PersonEntity> persons = personRepository.findByProgrammingLanguage("java");
 
@@ -90,5 +92,10 @@ public class JpaApplication implements CommandLineRunner
 		//VERIFICAR SI LO ENCONTRO
 		userr.ifPresentOrElse(user->personRepository.deleteById(user.getId()), ()-> System.out.println("NO SE ENCONTRO"));
 		//estamos verificando con una especie de ifelse, entonces si lo encuenta hace algo y si no, no
+	}
+
+	@Transactional
+	public void createDTO(){
+		System.out.println(personRepository.findAllDTO());
 	}
 }

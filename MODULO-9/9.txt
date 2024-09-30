@@ -100,3 +100,87 @@ Podemos crear consultas jpql, en las cuales no traigamos todo de los objetos, si
 
 
 SOBRECARGA: El concepto de la sobre carga también se puede ver aplicado acá, ya que podemos tener diferentes métodos anotados con @Query, con consultas y parámetros diferentes pero con el mismo nombre
+
+----------------------------------------------------------------------------------------------
+
+Obtener un solo registro:
+OPTIONAL: El optional es muy usado en este caso, ya que nos permitirá realizar por ejemplo un findByID, y verificar so se encuentra ese registro o no, evaluando con el isPresent o el ifPresent(person->callback), tenemos el isEmpty, en caso de que no encuentre nada, y para devolver el valor que contiene el optional usamos el optional.get
+
+
+Se aconseja utilizar el optional, en las consultas que se espera que retornn un solo elemento, como puede ser el findByid, de este modo podemos verificar si se nos devolvió algo o no
+
+
+
+-----------------------------------------------------------------------------------------
+CREAR un registro
+
+Para crear un registro inicialmente debemos crear una instancia de la tabla necesaria, y esa intancia se pasa a la base de datos por medio del repositorio con .sabe, SI EL ID ES NULL LO INSERTA COMO NUEVI REGISTRO, SI EL ID EXISTE LO MODIFICA
+
+
+TRANSACTIONAL:  En los controladores, en cada uno, podemos tener varias peticiones o consultas, las cuales se harán al mismo o a diferentes repositorys, para esto, este controlador se anota con @Transactional, lo cual indica que todo se ejecutara en una sola tranaccion, si tenemos métodos solo de consulta, (lectura) ponemos en la anotación @Transactional(readOnly = true)
+
+
+----------------------------------------------------------------------------------------------
+
+EDITAR un registro
+
+Para poder modificar algo primero tenemos que tener ese algo, así que inicialmente debemos hacer un get por el id, y ese objeto que trajimos lo modificamos y lo pasamos de nuevo con un save 
+
+
+---------------------------------------------------------------------------------------------
+
+ELIMINAR un registro
+
+Para eliminar un registro usamos un método del repository, pasando por ejemplo el ID, 
+
+La forma correcta es primero buscar el registro por id y por medio del optional verificar si esta o no, de modo que podamos realizar la petición si existe o lanzar un error si no existeqqqqqqqqqqqqqqqqqqq
+
+------------------------------------------------------------------------------------
+
+DTOS: un dto es un objeto que nos permite pasar datos del objeto completo que sale de la DB al objeto que vera el usuario
+
+Podemos en una Query, decir que nos devuelva un person dto, Indicando (select new RUTAENTERADELDTO.NOMBRECLASE(p.datoAtraer)from Person p)
+
+Y ya en la query ponemos que se devolverá una List del tipo del dto, asi atumaticamente se llenara el dto y se podrá mostrar en el controlador sin tenerlo que estar instanciando
+
+--------------------------------------------------
+
+DISTINC:
+
+Podemos filtrar registros al traerlos indicando que solo nos muestre los diferentes entre si 
+
+select distinc(p.name) from Person p //trae los nombres diferentes de personas
+
+
+
+COUNT: 
+
+permite contar la cantidad de registros que devuelve la query
+
+count(select distinc(p.name) from Person p) //cuenta la cantidad de registros
+
+
+
+CONCAT: 
+
+permite concatenar 2 valores que traigamos de la QUERY
+
+select CONCAT(p,name, p,lastname) from Person p  //devuelve nombre y apellido concatenado
+
+
+LOWER: convierte a minuscula
+select lower(CONCAT(p,name, p,lastname)) from Person p
+
+UPPER convierte a mayuscula
+
+
+
+BETWEEN
+
+Sirve para traer registros los cuales tengan una condición entre cierto numero y otro:
+
+select p from PersonEntity p WHERE p.id between 2 and 10   //DEVUELVE LOS USUARIOS CUYO ID ESTE ENTRE 2 Y 9 (NO ES INCLUSIVO)
+
+
+
+TAMBIEN SIRVE CON LETRAS, NO SOLO CON NUMEROS, Y SE RIGE POR MEIDIO DEL ABECEDARIO
