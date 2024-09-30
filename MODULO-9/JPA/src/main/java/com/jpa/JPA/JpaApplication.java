@@ -2,6 +2,7 @@ package com.jpa.JPA;
 
 import com.jpa.JPA.entities.PersonEntity;
 import com.jpa.JPA.repositories.PersonRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,7 +24,8 @@ public class JpaApplication implements CommandLineRunner
 	@Override
 	public void run(String... args) throws Exception {
 
-		update();
+		//update();
+		delete();
 		//Metodo de traer todos los usuarios
 		//List<PersonEntity> persons = personRepository.findByProgrammingLanguage("java");
 
@@ -78,5 +80,15 @@ public class JpaApplication implements CommandLineRunner
 			//Mandamos el registro para que se actualice
 			personRepository.save(personEntity);
 		});
+	}
+
+	@Transactional
+	public void delete(){
+		//BUSCAR EL USUARIO POR ID
+		Optional<PersonEntity> userr = personRepository.findById(2L);
+
+		//VERIFICAR SI LO ENCONTRO
+		userr.ifPresentOrElse(user->personRepository.deleteById(user.getId()), ()-> System.out.println("NO SE ENCONTRO"));
+		//estamos verificando con una especie de ifelse, entonces si lo encuenta hace algo y si no, no
 	}
 }
