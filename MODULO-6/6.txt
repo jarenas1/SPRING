@@ -1,0 +1,140 @@
+TERSEPTORES HTTP:
+
+Sirve para VALIDAR las rutas antes de que se haga una petición http, este verifica si el cliente esta autorizado para usar este endpoint, se aplican en los métodos del controlador
+
+
+ESTOS se pueden ejecutar antes o después del controlador, y devuelven un booleano, en caso de devolver true, lo que van a hacer es que van a continuar con la ejecución del método o conn el código, tener en cuenta que se pueden tener varios interceptores seguidos
+
+EJEMPLO, intento inciar sesión en una pagina, y el endopint no encuentra mi usuario, por ende el interceptor dará false y me deberá redirigir al login e nuevo
+
+METODOS:
+
+preHandler() ejecuta el interceptor antes del endpount
+
+postHandler()SE EJECUTA DEPSUES DEL ENDPOINT
+
+aferCompletion()SE EJECUTA CUANDO FINALIZA TODO, después de devolver la respuesta al cliente
+
+
+
+--------------------------------------------------------------
+
+CREAR UN INTEREPTOR:
+
+1. crear paquete interceptors
+
+2.crear la clase
+
+3. extederder HandlerInterceptor
+
+4. Implementar los métodos de esta clase
+
+5. inyectar esta clase al componente spring con @Component, recordar que @Bean no funcionaria en este caso
+
+6. Añadir este intercetor a una clase de configuarcion, esta clase debe implementar de WevMvcConfiguer
+
+7. sobre escribimos el método AddInterceptors
+
+8. Marcamos la clase con @Config, indicándole que va a contener Beans
+
+9. Inyectamos la clase de interceptor, la cual marcamos con @Component
+
+recordar que se debe inyectar desde la interfaz, por ende no inyectamos como tal la clase si no la interfaz que estamos añadiendo, y para diferenciar si tenemos otros métodos, manejamos esto poniendo el nombre de la clase dentro del @Component RECORDAR QUE INICIA EN MIN y añadimos el @Qualifier() donde vamos a inyectar
+
+10. Añadimos el interceptor en el método llamado en el #7 por medio de registry.addInterceptor(InterceptorInyectado)
+
+
+
+Ahora, como no indicamos que metodos del controlador va a manejar este interceptror, por defecto va a manejar todos, entonces cada que lancemos una petición con los metodos del controlador, veremos en la consola  Los mensajes de entrada y salida
+
+Si desearamos mostrar a que método esta entrando y de cual está saliendo, 
+
+HandlerMethod controller = ((HandlerMethod) handler); pasamos el atributo que entra al método handler a una clase, y ya luego en el log, traemos su nombre controller.getMethod().getName())
+
+
+
+
+PARA DECIR QUE ESTE INTERCEPTOR SOLO VA A ENVOLVER CIERTOS METODOS:
+
+debemos ir al archivo de configuración, al que marcamos con @Configuration, y en el método en el que añadimos los interceptores, añadimos el add.PathPatterns("rutaDelController", ..., ...)
+
+También, de la misma manera, podemos poner las rutas que no se desean incluir, ya que por defecto se incluyen todas, solo modificamos y ponemos .excluDEPathPatterns
+
+También algo interesante es poner que incluya o exluya todos los métodos de cierto requestMapping de un controlador, ("/requestMapping/**") 
+
+
+
+
+QUE PASA SI EL INTERCEPTOR DEVUELVE FALSE:
+
+lo que va a suceder es que se cortara la petición y no se devolverá nada del controlador, si deseamos devolver un error o algo personalizado cuando devuelva false, en el intercetor, cramos un map el cual será el json que devolverá el error
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Una idea que combine tus habilidades en Spring Boot y React y que al mismo tiempo tenga potencial de generar ganancias para contribuir al desarrollo de modelos de inteligencia artificial (IA) podría ser la creación de una plataforma de microservicios para la automatización de tareas repetitivas mediante IA. La idea sería ofrecer un servicio que permita a pequeñas y medianas empresas automatizar procesos internos mediante IA de forma sencilla y accesible.
+
+Proyecto: "AI Automator"
+Descripción:
+La plataforma AI Automator permitiría a las empresas automatizar tareas repetitivas como:
+
+Gestión de correos electrónicos
+Procesamiento de datos
+Generación de reportes
+Análisis de sentimientos en redes sociales
+Procesos de atención al cliente automatizados con chatbots inteligentes
+¿Cómo funcionaría?
+Backend con Spring Boot:
+
+Crear una API robusta que gestione flujos de trabajo automatizados y permita integraciones con diversas aplicaciones comerciales (CRM, herramientas de marketing, gestión de inventarios, etc.).
+Implementar microservicios que se conecten a modelos de IA (como GPT, análisis de imágenes, etc.) para resolver tareas complejas.
+Soporte para gestionar y almacenar grandes cantidades de datos en tiempo real.
+Frontend con React:
+
+Ofrecer un panel de control interactivo donde los usuarios puedan configurar las automatizaciones de manera visual.
+Implementar herramientas de análisis en tiempo real para ver el progreso de las automatizaciones.
+Permitir la personalización y ajuste de los modelos de IA mediante una interfaz fácil de usar.
+Modelo de Negocio:
+
+Freemium: La plataforma podría ofrecer funcionalidades básicas de automatización de manera gratuita, con opciones premium que desbloquean IA avanzada y tareas más complejas.
+Suscripción mensual basada en el número de automatizaciones o el uso de recursos de IA.
+Contribución a IA:
+
+Cada transacción o suscripción podría tener un porcentaje que se destine directamente al financiamiento de investigaciones o desarrollo de nuevas tecnologías en inteligencia artificial.
+Incluso podrías ofrecer a los clientes la opción de redirigir parte de su pago a proyectos de IA como una causa benéfica.
+Potencial:
+Escalabilidad: Podrías agregar nuevas funciones automatizadas regularmente, basadas en IA de vanguardia.
+Impacto global: La automatización es una tendencia en crecimiento, y una plataforma accesible con IA podría tener una adopción global.
+Monetización continua: Con un modelo de suscripción y la mejora continua, el flujo de ingresos sería constante.
+De esta forma, estarías generando ingresos mientras apoyas el avance de la IA, y podrías incluso promocionar cómo tu plataforma contribuye a mejorar la tecnología que estamos utilizando hoy.

@@ -1,0 +1,102 @@
+HIBERNATE: Es un framework  que mapea objetos, permitiendo así crear bases de datos relacionales por medio de esto
+
+Para que este pueda mapear cosas debemos indicar el tipo de cosas con anotaciones, por ejemplo @Id, @Column(name=nameOfColumn)
+
+También tenemos relaciones entre las entidades, ManyToOne, OneToMany, OneToOne y ManyToMany, Indicados también con anotaciones
+
+
+SRPING DATA JPA: Nos ofrece una serie de repositorios, los cuales tienen unos métodos precreados los cuales nos permiten modificar la persistencia, estos repositorios deben extenderse en nuestro repositorio, y se deben pasar 2 genéricos, el primero debe ser el tipo de dato y el segundo debe ser el tipo de datos de ID que contiene la instancia con la que vamos a trabajar
+
+Como esto no tiene todos los métodos del mundo, nosotros por medio de modificar su nombre, podemos indicarle que haga cierta cosa, por ejemplo, si necesitamos eliminar algo por el apellido, y nos ofrece uno para eliminar por ID llamado deleteById, podemos modificarlo y nombrarlo como deleteByApellido, tenemos ciertas palabras claves como el delete, find, And, Distinc, Is, Between, Null, Like, Not, OrderBy, In, true, false
+PODEMOS VER TODAS LAS PALABRAS CLABLES EN LA DOCUMENTACION Y VER QUE HACEN EN SQL
+
+Si no nos funciona la opción de arriba, y deseamos manejar una consulta más personalizada, podemos manejar las consultas creando querys por medio de la anotación @Query(""), la cual se ubica arriba de método y se pone dentro la consulta a realizar
+
+Por medio de estos repositorios también podemos crear la paginación.
+
+
+
+--------------------------------------------------
+
+Para acceder a todas esras funcionalidades, debemos añadir la dependencia MysqlDriver y springDataJPA, para acceder a toda la persistencia de datos
+
+-------------------------------------------------------
+
+Inicio de un proyecto:
+
+1. Entidades: Las entidades deben ser marcadas con sus respectivas anotaciones de springboot, además las de hibernate, podemos poner @Table(name="") Para indicar el nombre de esta tabla,
+@Comumn(name = "") Column en cada atributo, para indicar el nombre de la columna, y sus características, además de las anotaciones que indican las relaciones, también tenemos @Id, LA CUAL VA ACOMPAÑADA DE LA ANOTACION @GeneretedValue(Startegy = GenerationType."name") LA CUAL INDICARA LA FORMA EN LA QUE SE REGENERARA EL ID
+
+2. Creación de repositorios: Se crean dentro de un package, y se crea uno por cada entidad, y son INTERFACES, en cada una debemos extender de JPARepository<> y en los genéricos debemos poner, primero el tipo de entidad asociado y segundo el tipo de id de esta entidad
+
+Este repositorio debe ser inyectado en los lugares que deseemos usar sus métodos
+
+
+---------------------------------------------------------------
+
+Configuración a una base de datos:
+
+En el properties, debemos configurar todo lo relacionado con la base de datos, los datos de conexión y esas cosas, cosas que se deben poner básicamente:
+
+spring.dayasource.url=jdbc:mysql://biuvlr5etidoercwidlh-mysql.services.clever-cloud.com:3306/biuvlr5etidoercwidlh
+spring.datasource.username=ulhdnp38cuztpzl5
+spring.datasource.password = zjG4mGo2HrUvT4lZxrbk
+spring.jpa.hibernate.ddl-auto=create/delete/update...
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+spring.jpa.show-sql=true
+
+
+-------------------------------------------------------------------------------------
+
+Metodos de búsqueda basados en el nombre:
+
+Para poder lograr esto es necesario tener en cuenta las palabras claves, como: 
+Para crear métodos personalizados en un repositorio JpaRepository en Spring Data JPA, puedes utilizar palabras clave específicas que permiten construir consultas de manera automática basadas en el nombre del método. Aquí tienes algunas de las palabras clave más comunes:
+
+Operaciones de consulta:
+find: Buscar registros.
+get: Obtener registros.
+read: Leer registros.
+query: Realizar una consulta.
+stream: Retorna un Stream de resultados.
+count: Contar el número de registros.
+
+
+Cláusulas condicionales:
+By: Indica el inicio de las condiciones de consulta.
+And: Combina varias condiciones con un operador lógico AND.
+Or: Combina varias condiciones con un operador lógico OR.
+Between: Consulta entre dos valores.
+LessThan: Menor que un valor.
+GreaterThan: Mayor que un valor.
+IsNull / IsNotNull: Consulta por valores nulos o no nulos.
+Like: Consulta usando LIKE (coincidencias parciales).
+NotLike: Consulta para valores que no coincidan parcialmente.
+StartingWith: Coincidencia que comienza con un valor.
+EndingWith: Coincidencia que termina con un valor.
+Containing: Consulta que busca un valor que contenga otro valor.
+In: Consulta por un conjunto de valores.
+NotIn: Consulta excluyendo un conjunto de valores.
+True / False: Consulta por valores booleanos.
+OrderBy: Ordena los resultados.
+
+
+
+Consultas personalizadas por medio de JPQL = SQL
+
+Inicialmente, arriba del método ponemos la anotación @Query() y dentro de los paréntesis creamos las consultas, TENER EN CUENTA QUE NO ES SQL, ESTAMOS TRABAJANDO CON CLASES, ASI QUE CAMBIAN VARIAS COSAS, POR EJEMPLO NO SE HACE REFERENCIA A UNA TABLA SI NO A UNA CLASE, Por ejemplo si deseamos hacer referencia a que contenga un valor debemos poner alias.atributo = parámetro.
+
+ESTOS PARAMETROS SE DEBEN PASAR DENTRO DEL METODO QUE SE ESTA INDICANDO, Y SE LE PASAN A LA QUERY PONIENDO SU POSICION COMO ATRIBUTO(DESDE 1) Y UN SIGNO DE PREGUNTA
+
+EJ:  WHERE user.name = ?1
+List<User> skdks(String name)
+
+
+----------------------------------------------------------------------------------------------
+
+Podemos crear consultas jpql, en las cuales no traigamos todo de los objetos, si no solo algunos datos, por ejemplo el nombre y el apellido, Para esto debemos tener en cuenta que se nos va a retornar una lista de objetos, dependiendo de cuantas cosas pedimos retornar, va a ser el tamaño del array, entonces cuando iteremos la lista, debemos indicar que posición (que valor) deseamos objeter
+
+
+SOBRECARGA: El concepto de la sobre carga también se puede ver aplicado acá, ya que podemos tener diferentes métodos anotados con @Query, con consultas y parámetros diferentes pero con el mismo nombre

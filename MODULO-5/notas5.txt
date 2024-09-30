@@ -1,0 +1,58 @@
+MANEJO DE ERRORES:
+
+El objetivo de esto es que cuando nuestro programa muestre un error en la consola, este sea legible y migable con el desarrollador
+
+Para esto debemos tener un controlador encargado de agarrar las excepciones y este estará mapeado a un error
+
+
+
+1. Creamos una clase que se va a encargar de tener los datos que se mostraran en el error, como un mensaje, un error, un estado …
+
+2. creamos una clase que va a manejar los errores, llamada handleError y anotada con @RestControllerAdvice
+
+3. Creamos cada método para cada tipo de error, se indica el eror especifico en un @ Llamado @ExceptionHandler(nameOfError.class), luego se transforma a una clase con .cass. Si tenemos VARIOS ERRORES A LOS CUALES SE ASIGNARA ESTE ERROR, DENTRO DE LOS PARENTESIS ABRIMOS UNAS LLAVES Y LOS ESCRIBIMOS TODOS ADENTRO SEARADOS POR , ASI:
+
+ExceptionHandler({nameOfError.class,nameOfError.class,nameOfError.class})
+
+Luego en el método retornamos un responseEntity y recibimos una Exception, dentro del método indicamos de que tipo es el error, y contrumos un body o cuerpo para este
+
+Este body se crea por medio de la clase que ya se había creado
+
+
+CON NOT FOUND DEBEMOS CREAR MÁS COSAS
+
+
+
+------------------------------------------------------
+
+EXCEPCION PERSONALIZADA
+
+Creamos el package exception, y creamos las clases necesarias
+
+Las extendemos de run time exception
+
+Creamos constructor que reciba el mensaje Y SE LO DEVUELVA A LA CLASE PADRE, EN ESTE CASO EL RUNTIME
+
+En el controlador llamamos a algo que verifique la conidicon eseada para que se devuelva un error por medio de un condicional
+
+dentro del condicional llamamos el método creado en la excepción, usamos throw new NombreDelMetdo("mensaje");
+
+TODO ESTO SE HACE CON EL FIN, DE QUE CUANDO LLAMEMOS EL METODO, Y SALGA UN ERROR, PODAMOS MOSTRAR EN CONSOLA, NO UN MENSAJE DE ERROR PERSONALIZADO, SI NO UN ERROR CREADO POR NOSOTROS
+
+Ahora si deseamos manejar el error personalizado que creamos simplemente lo añadimos en el handleError y ya, Se llama al handler es el nombre de la clase que le pusimos, no el mensaje que añadimos.
+
+Por eso el nombre de la clase siempre debe debe tener un buen nombre y terminar en Exception
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+EXCEPCION PERSONALIZADA CON API OPTIONAL:
+
+Debemos indicar que se trabajara con optional donde se declara el método, en este caso el servicio
+
+Ahora donde se implementa estodo también debemos indicar que se devolverá un optional, y deberemps devolver un Optional.ofNulleable(user) ESTO DEVOLVERA UN OPTIONAL LLENO O VACIO
+
+Ya en el controlador, es donde debemos manejar el error, indicando si se encuentra la entidad se dará la entidad y si no, se lanzara el error
+Esto se hace llamando el servicio, y cuando se llame se ie pone el orelseThrow, el cual lo que hace es que si el usuario no se encuentra va a sacar el error

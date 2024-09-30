@@ -1,0 +1,94 @@
+PRINCIPIO DE INMUTABILIDAD:
+
+En la primera parte de este capitulo creamos una apirest sin usar la inyección de dependencias, por ende se llamo al service al controlador como si fuera un atributo, todo eso para poder acceder a sus métodos, pero en este caso el scope de este atributo seria singleton, es decir que es una instancia que se comparte por toda la petición, por ende cada que un usuario hacia una petiion en la que se aplicaban filtros desde el service esta instancia ya quedaba guardada con estos filtros, y si otro usuario la llamaba se aplicaba DE NUEVO los filtros declarados en el service.
+
+En teoría para solucionar esto deberíamos crear una instancia del servicio dentro de cada controlador, para que esta sea del alcance de cada petición por medio del controlador, esto se podrá ver en el commit NoSingleton, PERO ESTO NO ESTA CORRECTO debido a la gran cantidad de instancias que se crearían
+
+Este problema no solo se ve en la relación service-controller, si no también en la relación -service-repo, ya que cuando se esta realizando la modificación en el readaAll este esta afectando DIRECTAMENTE la lista que contiene los productos en el repo, para solucionar esto debemos crear una nueva instancia, añadir los nuevos valores y devolver esta misma para evitar tocar la original
+
+ver commit NoIsngleton2
+
+
+Para evitar tener que crear otra instancia existe la interfaz clonable, la cual se debe aplicar a la clase que se desea clonar, en este caso al product entity
+
+PARA NO TENER QUE CREAR UNA INSTANCIA PODEMOS UNAS LA IMPLEMENTACION CLONE EN LA CLASE DE LA ENTIDAD, y al final creamos un método clonable, que se crea autmonaticamente y modificamos el try catch
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+INTERFACES son un contrato que le va a decir a una clase que métodos tiene que usar
+
+Se usan mucho para desacoplar el código, y por lo genera casi todo tiene su interfaz
+
+
+-------------------------------------------------------------------------------------------------------
+INYECCION DE DEPENDENCIAS:
+
+Esta se basa en inyectar una instancia de una clase A a una clase B como un atributo, Ambos deben estar registrados en el contenedor de Spring, puede ser con el @Component, pero específicamente al inyectar una dependencia se especifica con el @Autowired
+
+Para esto debemos añadir todos los elementos al contenedor de spring para que puedan ser manejados, esto se indican con el @Controller, @Service ...
+
+RECORDAR, PARA PODER INYECTAR DEBEMOS LLAMAR EL AUTOWIRED
+
+
+Se trabaja adecuadamente inyectando las interfaces, y spring lo que va a hacer es buscar la clase que tenga implementada esta interfaz y la trae automaticamente, por ejemplo tenemos un service, que implementa una interfaz, si llamamos a esta interfaz automaticamente llama al service, pero si por ejemplo hay varios componente implementando una interfaz seria un problema que resolveremos más adelante
+
+Para inyectar una dependencia como ya lo vimos podemos usar los atributos, que es poniéndole el @Autowired
+
+También con setters que la única diferencia seria que no ponemos el @Autowired si no que declaramos el atributo y inytelijei nos genera el constructor, podemos verlo de productservice, recordar que se debe añadir el @Autiwired al setter
+
+También con constructor, que deberíamos añadir el atributo sin autowired y crear un constructor con esta instancia, en el constructor no es necesario añadir el autowired
+
+EN CONCLUSION LA FORMA MAS FACIL ES LA QUE YA SABEMOS
+
+
+
+----------------------------------------------------------------------------------
+VARIAS IMPLEMENTACIONES DE LA MISMA INTERFAZ:
+
+En este punto vamos a abordar específicamente el hecho de inyectar una interfaz y que se inyecte automáticamente la clase que implementa esta interfaz en los casos en los que esta interfaz este siendo implementada por varias clases
+
+Ejemplo: en los repositorios tenermos una interfaz, la cual se inyecta en el service, pero el problema es que esta interfaz esta siendo implementada por 2 clases, por ende debemos indicar cual clase de las 2 que implementan el repo será la que se va a inyectar, esto se hace definiendo una clase como defecto, por medio de @Primary y se ubica arriba dek @Repository
+
+En el caso de que se necesite en un lado inyectar una clase y en otro lado otra clase, usamos los caificadores, tener en cuenta que se pueden combinar ambas formas, y si no se indica un calificador se llamara por defecto la clase con @Primary
+
+Para usar los calificadores debemos llamar la clase @Cualifier("class"), y dentro de los paréntesis debemos indicar a que clase va a llamar esa interfaz, para esto tenemos 2 formas, 1. Es poniendo el nombre de la clase INICIANDO EN MINUSCULA PARA QUE PUEDA SER DETECTADO, o darle un nombre personalizado a la clase por medio de la anotación @Repository("name")Donde dentro de los paréntesis le daremos el nombre con el que podrá ser llamada esta clase 
+
+Se puede usar en @Qualifier en todas las inyecciones, en constructor en la parte de los atibutos antes de declarar la instancia de la interfaz, y con atibuto abajo de la anotacion @Autowired
+
+
+------------------------------------------------------------------------
+REQUEST SCOPE: 
+
+Como vimos inicialmente enfrentamos un problema con el tema de que al añadir un impuesto al producto este quedaba mofificado si se seguían haciendo peticiones, para podificar esto decidimos crear otra instancia y devolverla por medio del .clone, pero gracias al request scope podemos evitar esto:
+
+Normalmente todo en un progtama viene singleton, es decir que se afecta para todo el programa, pero con el request scope podemos decir que se va a afectar solamente para ese request(petición), este se ubica en la clase que deseemos que no sea singleton, en este caso en el repo que es el que contiene los datos
+
+
+------------------------------------------------------------------
+
+SESION SCOPE
+
+Esto es lo mismo que lo visto anteriormente, un alcance, pero en este caso es mas amplio que el request scope, ya que este permanece constante hasta que el usuario cierra la pestaña
+ 
+
+
+-----------------------------------------------------------------------------
+CLASE QUE LEE DATOS DE UN JSON
+
+crearemos una clase para practicar sin usar los @ tradicionales como @Service y asi, en este caso usaremos @Configuration
+
+creamos en resources el json que será leído
+
+creamos un reposotory que consuma el JSON
+
+Dentro de este repo creamos un constructor y llamamos el json como se ve en el commit JSON
+
+
+--------------------------------------------------------
+
+CREAR COMPONENTE ANOTADO CON @Bean
+
+Creamos una clase con @Config y dentro de esta llamamos la clase que deseamos añadir al contenedor, en este caso es un repositoriy que no tiene @Repository.
+
+En esta lo que hacermos en crear una instancia de esta clase por medio de un constructor, y la indicamos con @Bean

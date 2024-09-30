@@ -1,0 +1,20 @@
+CICLO DE VIDA DE UN BEAN:
+
+@PostConstruct
+
+Esta anotación indica a un constructor que se ejecute cuando las inyecciones de dependencias se hayan terminado de hacer, permitiéndonos manejarlas dentro de este para modificarlas, etc... Por defecto un contructor sin esto accedería a los atributos antes de que se inyectaran y sacaria null
+
+
+Esto lo que hace es que al cerrarse el alcance va a hacer algo antes de cerrar todo, por ejemplo cerrar un arhcivo, limpiar una base de datos, etc...
+
+TODO ESTO MENCIONADO TIENE MUCHO QUE VER O MEJOR DICHO TODO CON EL ACLANCE DEL COMPONENTE, YA QUE SI FUERAN DE UN REQUEST, CADA QUE SE HAGA UNA REQUEST SE LLAMARIA AL POSTCONSTRUCT Y ANTES DE CERRARSE LLAMARIA AL PREDESTROY
+
+Para nuestro ejemplo tenemos una factura, la cual no puede ser singleton, ya que si un usuario la modifica se le modificaria a todos, por ende la pondremos como requestScope
+
+Cuando ponemos la factura como request, al inyectarla en el controller que es singleton, no se inyecta directamente la factura, si no que se inyecta como una especie de copia y esto genera atributos residuales que no permiten crear el json, para esto en la misma factura abajo de requesScope, ponemos @JsonIgnoreProperties({"cosaQueDeseamosIgnorar})
+
+
+
+Para evitar que tener que poner el @Json Y eso, podemos hacer lo siguiente
+
+En el controlador creamos una nueva instancia de lo que se esta inyectando, en este caso la factura, y ya no tendríamos que hacer lo del json

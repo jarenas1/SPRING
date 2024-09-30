@@ -1,0 +1,184 @@
+INICIAMOS UN PROYECTO Y AÑADIVOS LA DEPENDENCIA DEVTOOLS PARA VER LOS CAMBIOS EN TIEMPO REAL Y NO TENER QIE VOLVER A LEVANTAR EL SERVIDOR
+
+
+CREACION DE UN HOLA MUNDO:
+
+1. Creamos el package controllers para crear los controller, un controler
+
+2. Creamos la clase nameController, y en la parte superior indicamos que es un @Controller, el cual se utiliza princioalmente con thimeleaf
+
+3. Creamos el primer método, el cual va a retornar el nombre de la vista en thymeleaf, en la parte superior indicamos que es un handdler (Va a recibir peticiones http) y ponemos el tipo, en este caso GET (@GetMapping) e indicamos la ruta en este para acceder al metodo:
+
+GET: recibe petición por medio de una ruta en el buscador
+POST: Recibe datos
+PUT: Modifica info existente
+DELETE
+
+
+4. Creamos la vista en la parte de templates dentro de resources, recordar que se debe llamar igual a lo que se retorna en el método, y en la vista ponemos todo lo que se desee ver, en el HTML de arriba se debe añadir lo sig: xmlns:th="http://www.thymeleaf.org"
+
+5. Volvemos al método para enviar el contenido a la vista, el método debe recibir como parámetro una instancia de la clase Model, la cual es la que nos va a ayudar a poder pasar todo a la vista, es OBLIGATORIO
+
+6. A este model le añadimos las cosas, se le añaden como clave,valor
+
+7.Añadimos las cosas dinámicamente, usando th:text ="${llave}" dentro de la etiqueta del HTML, esto lo que va a hacer es insertar en esa etiqueta el valor que tiene esa llave en el controller
+
+
+
+
+@RESTCONTROLLER:
+
+Esta anotación combina @Controller y @ResponseBody, que se encarga de devolver la respuesta como un JSON, por eso es que no se usa con thymeleaf
+
+Siguiendo el ejemplo de arriba como ya no se usara thymeleaf, eliminamos la instancia de model como atributo y añadimos map, el map se usara como el cuerpo del json, y por ultimo debemos retornar el mismo map que habíamos creado, CUANDO SE DECLARA UN MAP SE DEBE PONER 2 VALORES QUE VA A RECIBIR, UNO PARA LA LLAVE Y OTRO PARA EL VALOR, UN SIMIL A ESTE ES EL OBJETO DE JS
+
+
+@REQUESTMAPPING: ESTE SE PONE ABAJO DE @CONTROLLER/REST Y VA A INDICAR LA RUTA PARA ACCEDER A ESTE CONTROLADOR, Y LUEGO YA PONEMOS LA RUTA DE CADA CONTROLADOR
+
+
+
+INGRESAR UN USUARIO AL JSON:
+
+1. creamos la clase del usuario con sus atributos y todas sus cosas, para que quede como un objeto dentro de otro
+
+2. vamos al controlador e ingresamos en el método una instancia de esta clase
+
+3, con esta instancia creada le hacemos la asignación al body, que es la instancia del map, usando el put
+
+
+
+
+
+MVC
+
+Es un patron de arquitectura, el cual se forma de varios patrones de diseño, separa la aplicación n 3 componentes, modelo, vista y controlador, El controlador recibe una petición del usuario, el controlador pasa esto al modelo y el modelo se lo devuelve para que lo envie a la vista
+
+Si trabajamos con jpa el modelo vendrían siendo nustras services(Lógica de negocio) y Entitys
+
+
+
+
+CAMBIAR EL PUERTO POR DEFECTO A OTRO
+
+debemos ir al properties y poner server.port=####
+
+
+
+
+DTO
+
+Se usa para compartir datos, es un specie de objeto intrmedio, para evitar enviar todos los datos del objeto original, por ejemplo contraseñas
+
+se implementa en el mismo package e entitys uno nuevo llamado dto, donde se crearan clases dto por cada entidad
+
+dentro de la clase dto podríamos meter una instancia de la entidad original, pero también podemos crear valores solitos y añadirlos con getters y setters desde una instancia de la clase original
+
+
+
+ARRAYS EN JSON
+
+solamente debemos añadir las esntidades al array y devolver el array en el método, quedara como un array de objeos
+
+
+
+@REQUESTPARAM sirve para enviar datos del usuario y enviarlos al controlador
+
+ponemos la url en el navegador y ponemos ?parámetro = valor  para asignar el parámetro entrante
+
+esto también se puede hacer recibiendo varios parámetros al tiempo
+
+PARA pasar varios parámetros por la url van separados por &
+
+
+
+
+
+@PATHVARIABLE  sirve para enviar valores por medio de la ruta, se indica que es una variable entrante por medio de que se envuelve entre llaves, esta ruta se crea en el controlador de cada cosa
+
+y se asigna igual que el requestparam
+
+TAMBIEN PODEMOS RECIBIR VARIAS COSAS 
+
+
+
+
+ENVIAR COSAS CON POST}
+
+debemos indicar la anotación @PostMapping
+y poner que se recibirá un objeto en los parámetros, indicando que se le asignaran los valores del body de la petición por medio de @RequestBody
+
+
+
+Inyectar valores con @Value
+
+Para esto debemos definirlos primeramente en el properties con el siguiente nombre: config.name=value
+
+Y ya en el código se llaman usando 
+@Value("${name declarado}")
+privat String name ---------------------> ACA LA CREAMOS EN JAVA
+
+Y ya esto se puede usar como si fuera una variable normal
+
+
+
+
+CREAR OTROS PROPERTIES PARA METER ESTE TIPO DE VARIABLES
+
+se debe crear dentro de resources, y debe llamarse name.properties
+
+Para que esto pueda funcinar en la clase de configuración, donde esta el @SpringbootAplication, ponemos
+
+@PropertySource("classpath: fileName")
+
+Y ya quedaría funcionando para toda la aplicación y permite inyectarse como se vio anteriormente con el @Value
+
+
+TENER EN CUENTA LOS ACENTOS Y LAS Ñ QUE NO SON PERMITIDAS
+
+
+Como ya se indico anteriormente se deben declarar los proérties en la clase principal, pero para evitar que esto se vea feo y desordenado podemos crear otra clase para configurar esto, la clase debe ser hermana de la clase principal y se debe indicar con @Configuration
+
+y abajo de esto, antes de la clase, no dentro llamamos con @propertySource
+
+
+
+
+OTRA FORMA DE LLAMAR COSAS DE UN PROPERTIES SIN EL @value es inyectando una instancia de Enviroment, recordando poner el @Autowired
+
+y ya solo nos quedaría llamar lo que necesitemos poniendo envirment.getProperty("config.name")
+
+Este por defecto trae todo como String, asi que hay que tener eso en cuenta
+PARA INDICAR EL TIPO DE DATO EN EL QUE SE VA A RECIBIR ESTO envirment.getProperty("config.name",TypeVar.class)
+
+
+--------------------------------------------------------------------------------------
+
+
+REDIRECT THYMELEAF:  para redirigir en thyeleaf se usa en el return del un método controlador la paralabra redirect:/PaginaARedirigir, Esto va a cambiar la url y va a volver a cargar todo
+
+También podemos usar el FORWARD, el cual se mantiene dentro de la misma petición y no cambia la URL
+
+
+
+-------------------------------------------------------------------------------------------DESPLIEGUE DESDE TERMINAL
+
+Para generar el jar de despliegue debemos ir a la terminal y sersiorarnos e estar en la riz
+
+para generar usamos el comando mvnw.cmd clean install/package
+
+install nos genera un jar que podenis reusar, y package no
+
+
+SI DESEAMOS ELIMINAR UN JAR GENERADO USAMOS mvn clean
+
+
+
+RECORDAR, PARA ESTO LA VERSION DE JAVA DEL PROYECTO DEBE SER LA MISMA QUE TENEMOS EN LOCAL EN EL PC
+
+Al correr el comando se nos va a generar un jar en la carpeta target
+
+Luego entramos desde consola a la carpeta target y corremos el comando
+java -jar ./NOMBREDELARCHIVOTERMINADOEN.JAR 
+
+
+Ahora asi de sencillo podremos desplegar nuestro servidor en un servicio en la nube como aws, subiendo el jar y levantandolo
