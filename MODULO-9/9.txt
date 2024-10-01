@@ -239,5 +239,39 @@ select p.name, length(p.name) from PersonEntity p where length(p.name)=(select m
 
 
 
+------------------------------------------------------------------------------------------------------
 
 
+CICLOS DE VIDA
+
+Tenemos varias anotaciones que indican que se realizara algo en una clase, cada anotación dice cuando se hará, hay pre/post persist/update/delete
+
+ESTO SE METE COMO UN METODO DENTRO DE LA CLASE QUE ESTA CREANDO LA INSTANCIA
+
+Por medio de estos podemos decir por ejemplo, con el postUpdate que cuando se termine de editar algo se extraiga la fecha en que se hizo esto como se ve en el ejemplo, se añaden como atributo a la clase y se asignan por medio de los ciclos de vida
+
+ESTO SE CONOCE COMO AUDITORIA
+
+
+@PrePersist                  //Antes de crearse va a llenar el atrubuto de la clase con la fecha actual
+private void créate(){
+this.createdAt = localdatetime.now
+}
+
+
+
+@Embedded y Embeddable
+
+
+ESTOS CAMPOS DE AUDITORIA PUEDEN SER REUTILIZADOS EN TODAS NUESTRAS ENTIDADES DE LA SIGUIENTE MANERA, TAMBIEN PUEDEN SER REUSADOS CAMPOS COMO ID, NAME, Y DATOS QUE SE REPITAN MUCHO
+
+
+
+Para esto debemos crear una clase la cual será la que pasara atributos a otras clases, y la marcamos en vez de con @Entity con @Embeddable
+
+En esta clase ingresamos todos los atributos, con getters y setters, también sus constructores y en el caso de los CICLOS DE VIDA, añadimos los métodos ahi
+
+
+YA SIMPLEMENTE EN LA CLASE QUE DESEEMOS USAR ESTOS ATRIBUTOS, CREAMOS UNA NUEVA INSTANCIA DE ESTA CLASE Y LA MARCAMOS CON @Embedded, y ya podemos hacer get y set de esos atributos para esta clase
+
+private Audit Audit = new Audit()
