@@ -14,6 +14,11 @@ public class InvoiceEntity {
 
     private Long total;
 
+    //RELACION UN CLIENTE TIENE MUCHAS FACTURAS
+    @ManyToOne()
+//    @JoinColumn(name = "id_client")   LE DA NOMBRE PERSONALIZADO A LA COLUMNA DE UNION
+    private ClientEntity clientEntity;
+
     public InvoiceEntity() {
     }
 
@@ -50,8 +55,9 @@ public class InvoiceEntity {
     @Override
     public String toString() {
         return "InvoiceEntity{" +
-                "description='" + description + '\'' +
+                "clientEntity=" + clientEntity +
                 ", id=" + id +
+                ", description='" + description + '\'' +
                 ", total=" + total +
                 '}';
     }

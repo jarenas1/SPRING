@@ -23,6 +23,11 @@ public class ClientEntity {
         this.name = name;
     }
 
+    public ClientEntity(String name, String lastname) {
+        this.name = name;
+        this.lastname = lastname;
+    }
+
     public Long getId() {
         return id;
     }
