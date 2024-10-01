@@ -2,6 +2,8 @@ package com.jpa.JPA.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "persons")
 public class PersonEntity {
@@ -17,6 +19,10 @@ public class PersonEntity {
     @Column(name = "programming_language", nullable = false) //modificamos su nombre y que es obligatorio
     private  String programmingLanguage;
 
+    //LLAMAMOS LA AUDITORIA
+    private Audit audit = new Audit();
+
+
     public PersonEntity() {
     }
 
@@ -26,6 +32,8 @@ public class PersonEntity {
         this.name = name;
         this.programmingLanguage = programmingLanguage;
     }
+
+
 
     public Long getId() {
         return id;
