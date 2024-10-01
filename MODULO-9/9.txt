@@ -184,3 +184,60 @@ select p from PersonEntity p WHERE p.id between 2 and 10   //DEVUELVE LOS USUARI
 
 
 TAMBIEN SIRVE CON LETRAS, NO SOLO CON NUMEROS, Y SE RIGE POR MEIDIO DEL ABECEDARIO
+
+
+
+
+ASC/ DESC
+
+ASC: ordena los registros devueltos en orden ascendente
+
+DESC: oRDENA DE FORMA DESCENDENTE
+
+SE DEBE PONER ANTES DE ESTOS EL ORDER BY elementoOrdenador ASC/DESC
+
+EJ: select p from Person p order by p.name ASC  //ordena en orden ascendente por el nombre
+
+
+
+COUNT MAX MIN
+
+	COUNT NOS DEVUELVE LA CANTIDAD DE REGISTROS QUE TRAE
+
+	MAX, DEVUELVE EL VALOR MINIMO DE LO QUE PIDAMOS
+
+	MIN ///
+
+EJEMPLO SELECT COUNT/MAX/MIN(P.id) FROM PersonEntity p
+
+
+
+LENGTH:
+
+Muestra el tamaño de un string, simplemente se envuelve en sus paréntesis las cosas que deseamos extraer su tamaño
+
+SELECT min(length(p.name)) FROM UserEntity p //devuelve el nombre con tamaño min
+
+
+AVG:
+
+Esto hace un promedio de lo que le pasemos, el tamaño del nombre, del id, etc
+
+AVG(lenght(p.name)) //devuelve el promedio de la longitud del nombre
+
+
+-------------------------------------------------------------------------------------------------
+
+
+SUB QUERYS
+
+Nos permite meter consultas dentro del resultado de otra consulta, por ejemplo si deseamos traer el nombre del usuario con el nombre más corto
+
+TODO ESTO SE BASA EN HACER UN WHERE, IGUALAR UNA CONDICION DE LA QUERY ACTUAL CON LA DE LA SUB QUERY
+
+select p.name, length(p.name) from PersonEntity p where length(p.name)=(select min(length(p.name)) from Person p)
+
+
+
+
+
