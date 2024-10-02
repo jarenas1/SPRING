@@ -26,7 +26,7 @@ public class ClientEntity {
 //    inverseJoinColumns = @JoinColumn(name = "id_adress"),      //DA NOMBRE A COLUMNA QUE ALMACENA ID DE LA OTRA TABLA
 //    uniqueConstraints = @UniqueConstraint(columnNames = {"id_adress"})    //INDICA LAS COLUMNAS QUE DEBEN SER UNICAS
 //    )
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) //INDICAMOS COMO SE CREARA Y SE ELIMINARAN LOS DATOS
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER) //INDICAMOS COMO SE CREARA Y SE ELIMINARAN LOS DATOS Y EL TIPO DE FETCH
     private List<AdressEntity> adresses; //ALMACENA LOS DATOS
 
     public ClientEntity() {

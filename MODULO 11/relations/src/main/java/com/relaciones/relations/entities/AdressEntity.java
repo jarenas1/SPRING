@@ -2,6 +2,8 @@ package com.relaciones.relations.entities;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 
 //ESTA ENTIDAD SERA LA QUE PROOVEA A CLIENT LAS DIRECCIONES MANY
 
@@ -56,5 +58,18 @@ public class AdressEntity {
                 ", street='" + street + '\'' +
                 ", number=" + number +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        AdressEntity that = (AdressEntity) object;
+        return Objects.equals(id, that.id) && Objects.equals(street, that.street) && Objects.equals(number, that.number);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, street, number);
     }
 }

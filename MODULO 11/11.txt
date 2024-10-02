@@ -61,3 +61,11 @@ PARA PASAR LAS DIRECCIONES CORRECTAMENTE, CUANDO EL OBJETO VIENE DE LA BASE DE D
 (Arrays.asList(values,values,values)) de esta forma podremos añadir datos   ///PROBAR CON TABLA INTERMEDIA
 
 RECORDAR LUEGO DE AÑADIR DATOS, PERSISTIR
+
+
+
+-------------------------------------------------------------
+
+ELIMINAR HIJOS DESDE EL PADRE:
+
+Para esto debemos primero traer el objeto padre, y por medio de un get, traemos su lista de objetos relacionados, y ya con el método .remove lo podemos eliminar, el .remove recibe una instancia y la busca dentro de la lista o se le puede pasar el index también 

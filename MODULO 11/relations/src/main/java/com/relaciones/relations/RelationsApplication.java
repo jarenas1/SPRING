@@ -34,9 +34,75 @@ public class RelationsApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 //		manyToOne();
 //		manyToOneFindClient();
-		oneToMany();
-		createById();
+//		oneToMany();
+//		createById();
+//		removeAdress();
+		removeAdressCreated();
+	}
 
+	@Transactional
+	public void removeAdressCreated() {
+		Optional<ClientEntity> clientEntity = clientRepository.findById(1L);
+
+		clientEntity.ifPresentOrElse(clientEntity1 -> {
+			//creamos la direccion a añadir
+			AdressEntity adressEntity = new AdressEntity(778654, "boff");
+			//COMO ES UN OBJETO QUE VIENE DESDE LA PERSISTENCIA LA AÑADIMOS ASI:
+//			clientEntity1.getAdresses().add(adressEntity);
+			clientEntity1.setAdresses(Arrays.asList(adressEntity));
+			System.out.println("added");
+			//GUARDAMOS
+			clientRepository.save(clientEntity1);
+
+			Optional<ClientEntity> optionalClient = clientRepository.findById(1L);
+
+			//verificar si lo trajo
+			optionalClient.ifPresentOrElse(clientEntity2 -> {
+				//ELIMINAR DE LA LISTA
+				//RECORDAR AÑADIR EL EQUALS EN LA CLASE
+				clientEntity2.getAdresses().remove(adressEntity);
+
+				//ACTUALIZAR
+				clientRepository.save(clientEntity2);
+				System.out.println(clientEntity2);
+			},()->{});
+		}, () -> {
+			System.out.println("THE ADRESS CANOT BE ADDED");
+		});
+	}
+	@Transactional
+	public void removeAdress(){
+		ClientEntity clientEntity = new ClientEntity("Juancho", "Gaviria");
+
+		//Creacion de las direcciones que se le asignaran al cliente
+		AdressEntity adressEntity1 = new AdressEntity(123, "El rincon");
+		AdressEntity adressEntity2 = new AdressEntity(543, "La mota");
+		AdressEntity adressEntity3 = new AdressEntity(88483, "Belen");
+
+		//PARA AÑADIR PRIMERO DEBEMOS HACER UN GET, PARA QUE SE NOS TRAIGA LA LISTA Y LUEGO HACEMOS EL ADD
+		clientEntity.getAdresses().add(adressEntity1);
+		clientEntity.getAdresses().add(adressEntity2);
+		clientEntity.getAdresses().add(adressEntity3);
+
+		//PERSISTIMOS, GRACIAS AL CASCADE, LAS DIRECCIONES SE CREAN AUTOMATICAMENTE, NO TOCA CREARLAS PRIMERO
+		clientRepository.save(clientEntity);
+
+		System.out.println(clientEntity);
+
+		//TRAEL CLIENTE POR ID PARA ELIMINAR DIRECCION:
+
+		Optional<ClientEntity> optionalClient = clientRepository.findById(3L);
+
+		//verificar si lo trajo
+		optionalClient.ifPresentOrElse(clientEntity1 -> {
+			//ELIMINAR DE LA LISTA
+			//RECORDAR AÑADIR EL EQUALS EN LA CLASE
+			clientEntity1.getAdresses().remove(adressEntity1);
+
+			//ACTUALIZAR
+			clientRepository.save(clientEntity1);
+			System.out.println(clientEntity1);
+		},()->{});
 	}
 
 
