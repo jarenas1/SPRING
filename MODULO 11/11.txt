@@ -1,0 +1,20 @@
+RELACIONES
+
+Tenemos relaciones para identificar relaciones entre las entidades, como las bases de datos, cuando son muchos se refiere a un array de objetos
+
+@ManyToOne()
+
+En este caso, la parte de many, va a tener un atributo el cual es un array del tipo del objeto que esta llamando
+Y la parte del one, lo que hace es que se debe generar una instancia de la clase de la parte de muchos
+
+En la parte del que recibe el array se pone @OneToMany, y en la parte del que istancia un objeto es @ManyToOne, indicando asi que se reciben muchos o solo re recibe una instancia
+
+Ya al momento de crear una factura en la base de datos, simplemente traemos un cliente o creamos una y se lo seteamos al atributo de la factura que los une
+
+-------------------------------------------------------------------------------------------------
+
+
+@JoinColumn(name = "nameOfColumnFK")
+
+En la parte del many, podemos colocar algo llamado joinColumn, el cual nos permite darle un nombre a la columna que se generara en esa relación porel tema del id, por defecto es clase_id, asi que se puede modificar (COLUMNA QUE ALMACENA LAS FK)
+

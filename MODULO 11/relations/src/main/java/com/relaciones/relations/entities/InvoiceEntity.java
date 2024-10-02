@@ -16,7 +16,7 @@ public class InvoiceEntity {
 
     //RELACION UN CLIENTE TIENE MUCHAS FACTURAS
     @ManyToOne()
-//    @JoinColumn(name = "id_client")   LE DA NOMBRE PERSONALIZADO A LA COLUMNA DE UNION
+    @JoinColumn(name = "id_client_temp")   //    LE DA NOMBRE PERSONALIZADO A LA COLUMNA DE UNION
     private ClientEntity clientEntity;
 
     public InvoiceEntity() {
@@ -24,6 +24,11 @@ public class InvoiceEntity {
 
     public InvoiceEntity(Long id, String description, Long total) {
         this.id = id;
+        this.description = description;
+        this.total = total;
+    }
+
+    public InvoiceEntity(String description, Long total) {
         this.description = description;
         this.total = total;
     }
@@ -50,6 +55,14 @@ public class InvoiceEntity {
 
     public void setTotal(Long total) {
         this.total = total;
+    }
+
+    public ClientEntity getClientEntity() {
+        return clientEntity;
+    }
+
+    public void setClientEntity(ClientEntity clientEntity) {
+        this.clientEntity = clientEntity;
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.relaciones.relations.entities;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "clients")
 public class ClientEntity {
@@ -13,6 +15,10 @@ public class ClientEntity {
     private String name;
 
     private String lastname;
+
+    //RECIBE MUCHAS DIRECCIONES
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) //INDICAMOS COMO SE CREARA Y SE ELIMINARAN LOS DATOS
+    private List<AdressEntity> adresses; //ALMACENA LOS DATOS
 
     public ClientEntity() {
     }
@@ -52,10 +58,19 @@ public class ClientEntity {
         this.name = name;
     }
 
+    public List<AdressEntity> getAdresses() {
+        return adresses;
+    }
+
+    public void setAdresses(List<AdressEntity> adresses) {
+        this.adresses = adresses;
+    }
+
     @Override
     public String toString() {
         return "ClientEntity{" +
-                "id=" + id +
+                "adresses=" + adresses +
+                ", id=" + id +
                 ", name='" + name + '\'' +
                 ", lastname='" + lastname + '\'' +
                 '}';
