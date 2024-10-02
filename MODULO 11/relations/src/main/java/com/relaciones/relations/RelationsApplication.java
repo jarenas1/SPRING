@@ -1,14 +1,18 @@
 package com.relaciones.relations;
 
+import com.relaciones.relations.entities.AdressEntity;
 import com.relaciones.relations.entities.ClientEntity;
 import com.relaciones.relations.entities.InvoiceEntity;
 import com.relaciones.relations.repositories.ClientRepository;
 import com.relaciones.relations.repositories.InvoiceRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Optional;
 
 @SpringBootApplication
@@ -29,7 +33,10 @@ public class RelationsApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 //		manyToOne();
-		manyToOneFindClient();
+//		manyToOneFindClient();
+		oneToMany();
+		createById();
+
 	}
 
 
@@ -64,7 +71,42 @@ public class RelationsApplication implements CommandLineRunner {
 					System.out.println("aaaaa");
 				}
 		);
+	}
+	@Transactional
+	public void oneToMany(){
+		ClientEntity clientEntity = new ClientEntity("Juancho", "Gaviria");
 
+		//Creacion de las direcciones que se le asignaran al cliente
+		AdressEntity adressEntity1 = new AdressEntity(123, "El rincon");
+		AdressEntity adressEntity2 = new AdressEntity(543, "La mota");
+		AdressEntity adressEntity3 = new AdressEntity(88483, "Belen");
+
+		//PARA AÑADIR PRIMERO DEBEMOS HACER UN GET, PARA QUE SE NOS TRAIGA LA LISTA Y LUEGO HACEMOS EL ADD
+		clientEntity.getAdresses().add(adressEntity1);
+		clientEntity.getAdresses().add(adressEntity2);
+		clientEntity.getAdresses().add(adressEntity3);
+
+		//PERSISTIMOS, GRACIAS AL CASCADE, LAS DIRECCIONES SE CREAN AUTOMATICAMENTE, NO TOCA CREARLAS PRIMERO
+		clientRepository.save(clientEntity);
+
+		System.out.println(clientEntity);
+	}
+	@Transactional
+	public void createById(){
+		Optional<ClientEntity> clientEntity = clientRepository.findById(1L);
+
+		clientEntity.ifPresentOrElse(clientEntity1 -> {
+			//creamos la direccion a añadir
+			AdressEntity adressEntity = new AdressEntity(777, "brrr");
+			//COMO ES UN OBJETO QUE VIENE DESDE LA PERSISTENCIA LA AÑADIMOS ASI:
+//			clientEntity1.getAdresses().add(adressEntity);
+			clientEntity1.setAdresses(Arrays.asList(adressEntity));
+			System.out.println("added");
+			//GUARDAMOS
+			clientRepository.save(clientEntity1);
+		}, ()->{
+			System.out.println("THE ADRESS CANOT BE ADDED");
+		});
 
 	}
 }

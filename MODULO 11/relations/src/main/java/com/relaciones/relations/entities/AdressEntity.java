@@ -1,10 +1,7 @@
 package com.relaciones.relations.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.*;
+
 
 //ESTA ENTIDAD SERA LA QUE PROOVEA A CLIENT LAS DIRECCIONES MANY
 

@@ -18,3 +18,46 @@ Ya al momento de crear una factura en la base de datos, simplemente traemos un c
 
 En la parte del many, podemos colocar algo llamado joinColumn, el cual nos permite darle un nombre a la columna que se generara en esa relación porel tema del id, por defecto es clase_id, asi que se puede modificar (COLUMNA QUE ALMACENA LAS FK)
 
+
+----------------------------------------------------------------------------------------
+
+
+@OneToMay
+
+En esta relación, se indica donde esta la parte que recibe del many, va en la clase que recibe muchos, Para poder recibir estos datos, debemos en la clase que va a recibir los muchos, generar la anotación y crear una List de tipo de dato que se desea recibir
+
+SE DEBE PONER EN LOS PARENTESIS DE LA ANOTACION ESTOS DATOS: cascade = CascadeType.ALL, orphanRemoval = true, ESTO PERMITE ASEGURAR QUE LOS DATOS NO QUEDEN HUERFANOS Y QUE SE BORREN EN CASCADA
+
+ESTA RELACION NOS CREA UNA TABLA NUEVA, LA CUAL VA A ALMACENAR EL ID DE LA TABLA Y LA FK DE LA OTRA TABLA
+
+
+TENER EN CUENTA QUE ESTA LISTA SE DEBE INICIALIZAR, POR ENDE TENEMOS QUE METERLA DENTRO DE LOS CONSTRUCTORES PARA QUE SE INICIEN OOOO INICIALIZARLA DIRECTAMENTE DONDE SE CREA, si se desea inicializar en el constructor, en la primera linea ponermos this(), este lo que esta haciendo s llamar al constrcutor que tenga 0 parámetros, si añadimos parámetros dentro de los paréntesis, llamara al constructor que los contenga
+
+
+----
+
+Cuando vayamos a añadir registros a la lista de muchos, debemos tener en cuenta que es una LISTA, ASI QUE DEBEMOS TRAERLA CON GET Y AÑADIR COSAS CON ADD, NO CON SET PORQUE EL SET NOS OBLIGARIA A PASAR UNA LISTA.
+
+Los datos que pasemos a la lista, no debemos persistirlos primero, al persistir el objeto, directamente creara los otros registros necesarios gracias al deleteOnCascade
+
+
+!!IMPORTANTE-----------------------------------------
+
+
+NORMALMENTE, AL CREAR UNA RELACION ONETOMANY, SE CREARA UNA TABLA DE UNION, PARA EVITAR ESTO, DEBEMOS PONER ARRIBA DE LA ANOTACION (DE LA LISTA) EL @JoinColumn, e indicar un nombre para la columna de unión, asi e evitara tener que estar con más tablas
+
+
+Si deseamos dejar la tabla de unión, pero deseamos ponerle un NOMBRE PERSONALIZADO, ponemos la anotación @JoinTable(name="") en la parte superior de donde tenemos el onetomany, dentro de estos paréntesis, también podemos indicar el   nombre de la columna que va a almacenar el id de la tabla de uno, y con invereseJoinColumn = @JoinColumn(name), nombramos la columna que contendrá los ids de la otra tabla 
+
+También, va a haber un dato que no se repetirá, en este caso el id de la parte de muchos, ya que va de muchos a uno, entonces para indicar esto, ponemos uniqueConstraints = @UniqueConstraints(ColumnNames={"columnName", "columnName} //AÑADIMOS COLUMNAS QUE SERAN UNICAS
+
+--------------------FETCH LAZZY-----------------------S
+
+Cuando deseemos modificar el tema de las fk en este caso, cuando llamamos algún registro, este por defecto no va a traer las FK, solo traer lo que es EL CLIENTE
+LA DIRECCION, viene con un fetch llamado lazzy, perezoso.
+
+
+PARA PASAR LAS DIRECCIONES CORRECTAMENTE, CUANDO EL OBJETO VIENE DE LA BASE DE DATOS Y NO ES UNO QUE ACABAMOS DE CREAR, ES POR MEDIO AHORA SI DEL SET, Y DENTRO DE ESTE SET PASAMOS 
+(Arrays.asList(values,values,values)) de esta forma podremos añadir datos   ///PROBAR CON TABLA INTERMEDIA
+
+RECORDAR LUEGO DE AÑADIR DATOS, PERSISTIR
