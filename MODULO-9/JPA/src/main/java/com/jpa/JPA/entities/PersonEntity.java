@@ -18,7 +18,7 @@ public class PersonEntity {
 
     @Column(name = "programming_language", nullable = false) //modificamos su nombre y que es obligatorio
     private  String programmingLanguage;
-
+    @Embedded
     //LLAMAMOS LA AUDITORIA
     private Audit audit = new Audit();
 

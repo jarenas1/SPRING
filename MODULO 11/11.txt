@@ -36,10 +36,19 @@ TENER EN CUENTA QUE ESTA LISTA SE DEBE INICIALIZAR, POR ENDE TENEMOS QUE METERLA
 
 ----
 
-Cuando vayamos a añadir registros a la lista de muchos, debemos tener en cuenta que es una LISTA, ASI QUE DEBEMOS TRAERLA CON GET Y AÑADIR COSAS CON ADD, NO CON SET PORQUE EL SET NOS OBLIGARIA A PASAR UNA LISTA.
+Cuando vayamos a añadir registros a la lista de muchos, debemos tener en cuenta que es una LISTA, ASI QUE DEBEMOS TRAERLA CON GET Y AÑADIR COSAS CON ADD, NO CON SET PORQUE EL SET NOS OBLIGARIA A PASAR UNA LISTA.  MALLLLL ESTO SOLO FUNCIONA CUANDO ESTAMOS CREANDO EL CLIENTE, NO CUANDO ELL CLIENTE VIENE DE LA DB
 
 Los datos que pasemos a la lista, no debemos persistirlos primero, al persistir el objeto, directamente creara los otros registros necesarios gracias al deleteOnCascade
 
+
+PARA PERSISITIR CORRECTAMENTE EN LA LISTA, DEBEMOS PRIMERO TRAER LO QUE YA SE ENCUENTRA EN LA LISTA DEL USUARIO:
+// Recuperamos la lista existente de facturas
+        List<InvoiceEntity> existingInvoices = clientEntity.getInvoices();
+
+LUEGO AÑADIMOS LAS FACTIRAS 
+existingInvoices.addAll(Arrays.asList(invoiceEntity1, invoiceEntity2));
+
+Y POR ULTIMO SOLO LE HACEMOS SAVE AL USUARIO YA QUE DETECTA AUTOMATICAMENTE LOS CAMBIOS DE LA LISTA
 
 !!IMPORTANTE-----------------------------------------
 
@@ -68,4 +77,107 @@ RECORDAR LUEGO DE AÑADIR DATOS, PERSISTIR
 
 ELIMINAR HIJOS DESDE EL PADRE:
 
-Para esto debemos primero traer el objeto padre, y por medio de un get, traemos su lista de objetos relacionados, y ya con el método .remove lo podemos eliminar, el .remove recibe una instancia y la busca dentro de la lista o se le puede pasar el index también 
+Para esto debemos primero traer el objeto padre, y por medio de un get, traemos su lista de objetos relacionados, y ya con el método .remove lo podemos eliminar.
+
+Pero para poder usar el .remove, debemos encontrar la manera de identificar cual de la lista es el que se debe eliminar, por esto desde intelij DEBEMOS CREAR EN LA CLASE QUE ALIMENTA LA LISTA EL EQUALS, DE ESTE MODO podremos pasar en el .remove UNA INSTANCIA DE LA CLASE, EL .REMOVE BUSCARA ESTA INSTANCIA EN LA LISTA Y LA ELIMINARÁ
+
+!!!!ESTO ERA UN CASO DE EJEMPLO, NO UN CASO REAL, YA QUE TENEMOS QUE TENER CREADO EN EL MISMO METODO EL ELEMENTO QUE QUEREMOS BORRAR YA QUE ES NECESARIO PASARSELO AL .REMOVE
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+ELIMINAR HIJOS DESDE EL PADRE(EN RELACION YA CREADA)
+
+SE HACE IGUAL, SIMPLEMENTE LLAMAMOS Y CON GET LE PASAMOS EL .REMOVE
+
+---------------------------------------------------------------------
+
+TIPOS DE FETCH:
+
+Sabemos que cuando hacemos una petición a la base de datos, si se tiene que ejecutar mas peticiones en el mismo método, nos va a tirar errro, ya que el fetch por defecto es LAZY, para solucionar esto, en el @OneToMany(), simplemente añadimos el tipo de fetch: fetch = FetchType.EAGER
+
+Esto lo que va a hacer es traer a parte de la clase como tal, todos los objetos dependeintes de esta clase
+
+
+
+
+……………………………………………………………….----------------------------
+
+BIDIRECCIONALES
+
+Una relación bidireccional es cuando le indicamos a ambas clases que se deben relacionar para poder hacer solicitud de datos desde ambos lados, en una relación manyToOne, esto se logra, indicándole al otro lado que es OneToMany
+
+Con el tema de la FK, debemos indicar en que lado es, por ende debemos hacer lo siguiente:
+
+1. tener en cuenta que la tabla que contendrá la FK, será la que este en la parte de many
+
+2. dale un nombre con @JoinColumn a donde se almacenaran estas FK
+
+3. en la tabla principal, la que contiene el ONE, debemos dentro de la anotación OneToMany, debemos indicar donde se va a almacenar su id como FK, para esto añadimos mappedBy="nameOf"
+
+en el nameOf, debe ir el nombre del atributo de la clase de la parte de Many que esta haciéndole referencia, recordenmos que en una relación manyToOne, se debe instanciar la clase a la que se esta llamando
+
+Entonces si tenemos una entidad UserEntity y la instanciamos como userEntity, entonces este mappedBy llevaría este valor
+
+
+TODOS LOS JOIN COLUMN DEBEN NOMBRARSE COMO className_id
+
+
+IMPORTANTE, NO PODEMOS TENER EN AMBAS CLASES EL TOSTRING, Debemos borrar la clase del one, que se encuentra en el many de tostring
+
+
+-----------------------------------------------------------
+
+ASIGNAR VALORES:
+
+Como es una relación bidireccional, debemos asignar los valores a ambos lados, 
+
+ASIGNACION EN UN REGISTRO YA EXISTENTE:
+
+traemos con el optional el cliente por el ID, verificamos que lo traiga y si lo trae creamos lo que deseamos añadir y se lo añadimos como un array por medio de Arrays.asList(values,...)
+
+
+------------------------------------------------------------------------------------------
+
+ELIMINAR HIJOS CON FACTURAS EN RELACION BIDIRECCIONAL:
+
+SIMPLEMENTE LO QUE HACE EL CUCHO ES INICIALMENTE LLAMAR AL OBJETO DE LA BASE DE DATOS POR EL ID, y si esta presente llama del mismo modo a una factura por ID?? la cual si esta presente realizara un get de las facturas del usuario y con .remove envia la factura que trajo por medio del ID
+
+RECORDAR QUE ES NECESARIO EL EQUALS Y HASHCODE EN LA CLASE DE LA FACTURA
+
+
+
+
+-
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ONE TO ONE
+
+Una relación OneToOne, indica que hay una relación directa entre un registro de la tabla 1 y un solo registro de la tabla 2 y viceversa
+
+Para usar esto debemos crear una instancia de la otra entidad declarada en nuestra clase, así como en la parte del many, entonces creamos una instancia de la otra clase y la anotamos con @OneToOne
+
+DE ESTE MODO YA CREAMOS UNA RELACION UNIDIRECCIONAL, DEPENDEIENDO DE DONDE LA MARQUEMOS VA A ESTAR LA FK, SI LO MARCAMOS EN LA ENTIDAD DE CLIENTES A CLIENTES SE LE ASIGNA LA COLUMNA CON EL ID DEL DETALLE AL QUE ESTA ASOCIADO Y VISEVERSA
+
+
+TENER EN CUENTA QUE ESTAS RELACIONES VIENEN AUTOMATUCAMENTE EN EAGER, AL IGUAL QUE LA PARTE DE MANY
+
+ESTA RELACION PUEDE SER MARCADA CON EL @JOINCOLUMN PARA NOMBRAR LA COLUMNA
+
+
+
+BI DIRECCIONAL
+
+EN ESTA RELACION DEBEMOS CREAR UNA INSTANCIA DE CADA UNA DE LA CLASE QUE SE ESTA LLAANDO EN LA RELACION, SE MARCAN CON @OneToMany, y se indica en la entidad que deseemos que guarde la relación, con @JoinColumn su nombre
+
+Ahora debemos indicar cual es la clase padre, es decir cual se va a ver alimentada por la otra, en este caso cliente se alimenta de details, por ende en cliente debemos indicar el cascade y todo esto
+
+RECORDAR QUE COMO ES UNA RELACION BIDIRECCIONAL, EN LA CLASE QUE NO TIENE LA FK, DEBEMOS INDICAR QUE ATRIBUTO LA ESTA GUARDANDO CON EL MappedBy
+
+
+CLASE PADRE: características de la relación y el mappedBy
+
+CLASE HIJA: Almacena FK, con el joinColumn
+
+

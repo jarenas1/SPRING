@@ -29,6 +29,15 @@ public class ClientEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER) //INDICAMOS COMO SE CREARA Y SE ELIMINARAN LOS DATOS Y EL TIPO DE FETCH
     private List<AdressEntity> adresses; //ALMACENA LOS DATOS
 
+
+    //BIDIRECCIONAL CON FACTURAS ONETOMANY
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "clientEntity") //mappedByIndica como se instancio esta clase en el many
+    private List<InvoiceEntity> invoices = new ArrayList<>(); //se inicializa aca o en el constructor
+
+
+    //ONETOONE BIDIIRECCIONAL  //esta es la clase que se alimenta, por ende condifuramos todo aca
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "clientEntity")
+    private ClientDetails clientDetails;
     public ClientEntity() {
         //SE INICIALIZA LA LISTA, TAMBIEN SE PUEDE INICIALIZAR NORMALMENTE
         this.adresses = new ArrayList<>();
@@ -81,6 +90,22 @@ public class ClientEntity {
         this.adresses = adresses;
     }
 
+    public List<InvoiceEntity> getInvoices() {
+        return invoices;
+    }
+
+    public void setInvoices(List<InvoiceEntity> invoices) {
+        this.invoices = invoices;
+    }
+
+    public ClientDetails getClientDetails() {
+        return clientDetails;
+    }
+
+    public void setClientDetails(ClientDetails clientDetails) {
+        this.clientDetails = clientDetails;
+    }
+
     @Override
     public String toString() {
         return "ClientEntity{" +
@@ -88,6 +113,8 @@ public class ClientEntity {
                 ", id=" + id +
                 ", name='" + name + '\'' +
                 ", lastname='" + lastname + '\'' +
+                ", invoices=" + invoices +
+                ", clientDetails=" + clientDetails +
                 '}';
     }
 }
