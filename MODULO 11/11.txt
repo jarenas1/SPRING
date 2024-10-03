@@ -181,3 +181,58 @@ CLASE PADRE: características de la relación y el mappedBy
 CLASE HIJA: Almacena FK, con el joinColumn
 
 
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+PARA CONSULTAS CON JOINS ES MEJOR ALMACENAR TODO DENTRO DE UM SET QUE ES IGUAL QUE UNA LISTA
+
+
+MANY TO MANY
+
+Las relaciones muchos a muchos es cuando tenemos una tabla, la cual agarra muchas cosas de otra tabla, y a su vez otra tabla también agarra cosas de la tabla inicial
+
+Para usarla debemos tener una clase padre, en la cual manejaremos el cascade y todo esto, Debemos ser cuidadosos con esto, ya que como es una relación de muchos a muchos, si por ejemplo tenemos estudiantes y cursos, y deseamos borrar un estudiante, no deseamos que el curso se elimine ya que habran otros usuarios en este
+
+para solucionar esto, en el cascade, debemos meter 2 valores asi: cascade = {CascadeType.PERSIST, CascadeType.MERGE}
+
+
+CUANDO CREAMOS ESTA RELACON, se crea una tabla intermedia, para configurar esta marcamos en la clase padre(donde esta el cascade) @JoinTable, y configuramos como podemos ver más arriba
+
+
+//Si deseamos dejar la tabla de unión, pero deseamos ponerle un NOMBRE PERSONALIZADO, ponemos la anotación @JoinTable(name="") en la parte superior de donde tenemos el onetomany, dentro de estos paréntesis, también podemos indicar el   nombre de la columna que va a almacenar el id de la tabla de uno, y con invereseJoinColumn = @JoinColumn(name), nombramos la columna que contendrá los ids de la otra tabla 
+
+También, va a haber un dato que no se repetirá, en este caso el id de la parte de muchos, ya que va de muchos a uno, entonces para indicar esto, ponemos uniqueConstraints = @UniqueConstraints(ColumnNames={"columnName", "columnName} //AÑADIMOS COLUMNAS QUE SERAN UNICAS
+
+
+PARA CREAR UN REGISTRO, creamos el padre, le añadimos los hijos y lo persistimos, TENER EN CUENTA COMO SE AGREGAN LAS COSAS A LA LISTA PARA QUE NO SE BORREN LAS OTRAS
+
+----
+Para borrar de la lista, simplemente llamamos al objeto, y tenemos después que llamar también lo que queramos eliminar, una vez hagamos esto, hacemis un get a la lista y con .remove() pasamos el objeto a eliminar   RECORDAR QUE DEBE ESTAR EL .EQUIALS Y .HASHCODE CREADOS EN LA CLASE HIJA, RECORDAR TAMBIEN PASAR EL HIJO QUE SE VA A ELIMINAR DE OPTIONAL A OBJETO PARA PASARLO AL REMOVE
+
+
+
+
+BIDIRECCIONAL MANY TO MANY
+
+Simplemente creamos la lista del otro lado e la relación, tener en cuenta que no se vuelve a meter en el toString, para que no sea infinito
+
+En la relación padre como ya se indico, se crea todo lo que tiene que ver con las relaciones en cuanto a cascada, también e personaliza la tabla, se definen variables únicas, se indica el nombre de la columna, etc
+
+En la relación hija, se debe indicar que atributo de la clase padre lo está mapeando, en este caso es la instancia de ella misma, esto va dentro de un @ManyToMany(mappedBy = "courses")"
+
+
+Cuando tenemos una relación, deseamos ELIMINAR DE AMBOS LADOS, SEA CUAL SEA LA RELACION, ES DECIR. SI YO ELIMINO O AÑADO UN USUARIO DEBO INDICARLO A AMBOS LADOS DE LA RELACION, PARA ESTO EN LA CLASE HIJA, PODEMOS CREAR METODOS PARA AÑADIR O ELIMINAR, LOS CUALES SE CREAN ASI
+
+public void removeCourse(CourseEntity course){
+	this.courses.remove(course);
+	course.getStudents().remove
+}
+
+public void addCourse(CourseEntity course){
+	this.courses.remove(course);
+	course.getStudents().remove
+}
+
+Y YA ESTO LO PODEMOS LLAMAR PARA ELIMINAR O CREAR FACILMENTE
+

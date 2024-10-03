@@ -3,6 +3,7 @@ package com.jpa.JPA.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "persons")
@@ -67,5 +68,18 @@ public class PersonEntity {
         this.programmingLanguage = programmingLanguage;
 
 
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        PersonEntity person = (PersonEntity) object;
+        return Objects.equals(id, person.id) && Objects.equals(name, person.name) && Objects.equals(lastname, person.lastname) && Objects.equals(programmingLanguage, person.programmingLanguage) && Objects.equals(audit, person.audit);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, lastname, programmingLanguage, audit);
     }
 }

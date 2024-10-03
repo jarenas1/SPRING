@@ -38,6 +38,8 @@ public class ClientEntity {
     //ONETOONE BIDIIRECCIONAL  //esta es la clase que se alimenta, por ende condifuramos todo aca
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "clientEntity")
     private ClientDetails clientDetails;
+
+
     public ClientEntity() {
         //SE INICIALIZA LA LISTA, TAMBIEN SE PUEDE INICIALIZAR NORMALMENTE
         this.adresses = new ArrayList<>();

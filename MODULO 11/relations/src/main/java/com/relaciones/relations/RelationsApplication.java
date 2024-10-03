@@ -1,15 +1,11 @@
 package com.relaciones.relations;
 
-import com.relaciones.relations.entities.AdressEntity;
-import com.relaciones.relations.entities.ClientDetails;
-import com.relaciones.relations.entities.ClientEntity;
-import com.relaciones.relations.entities.InvoiceEntity;
-import com.relaciones.relations.repositories.ClientDetailsRepository;
-import com.relaciones.relations.repositories.ClientRepository;
-import com.relaciones.relations.repositories.InvoiceRepository;
+import com.relaciones.relations.entities.*;
+import com.relaciones.relations.repositories.*;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.OneToOne;
 import jakarta.transaction.Transactional;
+import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 
 @SpringBootApplication
 public class RelationsApplication implements CommandLineRunner {
@@ -32,6 +29,12 @@ public class RelationsApplication implements CommandLineRunner {
 
 	@Autowired
 	private InvoiceRepository invoiceRepository;
+
+	@Autowired
+	private StudetRepository studetRepository;
+
+	@Autowired
+	private CourseRepository courseRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(RelationsApplication.class, args);
@@ -48,8 +51,104 @@ public class RelationsApplication implements CommandLineRunner {
 //		oneToManyInvoiceBidirectional();
 //		oneToManyInvoiceBidirectionalDELETE();
 //		OneToOne();
-		OneToOneBiFind();
+//		OneToOneBiFind();
+//		manyToManyFind();
+//		removeManyToManyFind();
+		manyToManyBi();
 	}
+
+	//================================MANY TO MANY ==========================================================
+	public void manyToMany(){
+		//CREACION DE ESTUDIANTES
+		StundentEntity stundentEntity1 = new StundentEntity("Juan", "Arenas");
+		StundentEntity stundentEntity2 = new StundentEntity("Armando", "Baretos");
+
+		//Creamos cursos
+		CourseEntity courseEntity1 = new CourseEntity("Java de 0 a experto", "Andres gayzman");
+		CourseEntity courseEntity2 = new CourseEntity("Docker de 0 a 0", "Andres gayzman");
+
+		//SETEAMOS LOS CURSOS
+		stundentEntity1.setCourses(Arrays.asList(courseEntity1,courseEntity2));
+		stundentEntity2.setCourses(Arrays.asList(courseEntity1));
+
+		//AÑADIMOS A LA DB   //se uso saveAll, porque permite persistir una lista de cosas
+		studetRepository.saveAll(Arrays.asList(stundentEntity1,stundentEntity2));
+	}
+
+	public void manyToManyFind(){
+		//Obetncion DE ESTUDIANTES
+		Optional<StundentEntity> stundentEntity1 = studetRepository.findById(1L);
+		Optional<StundentEntity> stundentEntity2 = studetRepository.findById(2L);
+
+		//Pasamos a usuarios
+		StundentEntity stundent1 = stundentEntity1.get();
+		StundentEntity stundent2 = stundentEntity2.get();
+
+		//Creamos cursos
+		CourseEntity courseEntity1 = new CourseEntity("Python de 100 a 0", "Andres gayzman");
+		CourseEntity courseEntity2 = new CourseEntity("C++ de 0 a 0", "Andres gayzman");
+
+		//SETEAMOS LOS CURSOS
+		stundent1.setCourses(Arrays.asList(courseEntity1,courseEntity2));
+		stundent2.setCourses(Arrays.asList(courseEntity1));
+
+//		studetRepository.save(stundent1);
+//		studetRepository.save(stundent1);
+
+		//AÑADIMOS A LA DB   //se uso saveAll, porque permite persistir una lista de cosas
+		studetRepository.saveAll(Arrays.asList(stundent1,stundent2));
+		System.out.println(stundent1 + "" + stundent2);
+	}
+
+
+	public void removeManyToManyFind(){
+		Optional<StundentEntity> stundentEntity1 = studetRepository.findById(1L);
+
+		//Pasamos a usuarios
+		StundentEntity stundent1 = stundentEntity1.get();
+
+		//Traemos curso
+		Optional<CourseEntity> courseEntity = courseRepository.findById(6L);
+
+		//Borramos el curso
+		stundent1.getCourses().remove(courseEntity.get());
+
+//		studetRepository.save(stundent1);
+//		studetRepository.save(stundent1);
+
+		//AÑADIMOS A LA DB   //se uso saveAll, porque permite persistir una lista de cosas
+		studetRepository.save(stundent1);
+		System.out.println(stundent1);
+	}
+
+	public void manyToManyBi(){
+		//CREACION DE ESTUDIANTES
+		StundentEntity stundentEntity1 = new StundentEntity("Jesus", "Restrepo");
+		StundentEntity stundentEntity2 = new StundentEntity("Kevin", "gei");
+
+		//Creamos cursos
+		CourseEntity courseEntity1 = new CourseEntity("FERNANDO", "REACT");
+		CourseEntity courseEntity2 = new CourseEntity("FERNANDO", "NODE");
+		CourseEntity courseEntity3 = new CourseEntity("FERNANDO", "EXPRESS");
+
+		//SETEAMOS LOS CURSOS
+		stundentEntity1.getCourses().add(courseEntity1);
+		stundentEntity1.getCourses().add(courseEntity2);
+		stundentEntity2.getCourses().add(courseEntity2);
+
+
+		//Añadimos un usuario a un curso
+		courseEntity3.setClients(Set.of(stundentEntity1,stundentEntity2));
+		//AÑADIMOS A LA DB   //se uso saveAll, porque permite persistir una lista de cosas
+		studetRepository.saveAll(Arrays.asList(stundentEntity1,stundentEntity2));
+		courseRepository.save(courseEntity3);
+	}
+
+
+
+	//===========================================================================================
+
+
 		//================================0NE TO ONE ==========================================================
 	@Transactional
 	public void OneToOne(){
@@ -100,8 +199,6 @@ public class RelationsApplication implements CommandLineRunner {
 			System.out.println(clientEntity);
 		});
 	}
-
-
 
 	//===========================================================================================
 
