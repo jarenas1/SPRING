@@ -1,0 +1,346 @@
+ENVIAR CORREOS:
+
+Instalamos el java mail sender
+
+Vamos al properties y configuramos una serie de propiedades
+
+Debemos poner:
+
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=
+spring.mail.password=
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+
+EN LA CONTRASEÑA DEBEMOS IR A LAS CONFIGIRACIONES DE LA CUENTA DE GMAIL Y GENERAR UNA APP PASSWORD 
+
+EN EL EMAIL DEBEMOS PONER EL EMAIL
+
+
+
+Luego debemos crear un servicio anotado con servicio
+
+Aca debemos inyectar el JavaMailSender
+
+creamos un método que reciba 3 String, toEmail, subject, body
+
+luego dentro del método seteamos valores del email
+
+SimpleMailMessage message = new SimpleMailMessage()  //CREACION DEL EMAIL COMO TAL
+
+message.setFrom("nuestroEmail")
+message.setFrom(toEmail) //a donde ira
+message.setText(body)
+message.setSubject(subject)
+
+Ahora enviamos el email
+mailsender.send(message)
+
+Simplemente falta llamar este servicio, llamar el método y pasar los parámetros, el body y todo esto, cuando pase un evento se enviara el email
+
+
+
+
+
+------------------------------------------------------
+
+AÑADIR VARIABLES EN SB
+
+Se llaman por medio de =${NAMEENMAYUSCULA}
+
+Para crearlas vamos a configurar el proyecto, en la parte superior donde dice currentFie y le damos en edit configurations
+
+Luego le damos a la derecha en modify options
+
+luego en la lista de damos en Enviroment variables
+
+Nos va a aparecer un input con variables de entorno, le damos en el icono de documento a la derecha
+
+En ese modal, podremos crear y modificar nuestras variables de entorno
+
+RECORDAR ACTUALIZAR EL POM
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------------------------------
+
+SWAGGER:
+
+
+ruta por defecto: http://localhost:8050/swagger-ui/index.html
+
+
+Debemos añadir el starter 
+
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+    <version>2.0.2</version>
+</dependency>
+
+
+Por defecto tendrá esta rut+a
+
+http://localhost:8080/swagger-ui/index.html
+
+
+RECORDAR PONER PUBLICAS LAS RUTAS QUE PERMITEN SU FUNCIONAMIENTO
+
+ .requestMatchers( "/v3/api-docs/**",      // Para OpenAPI 3.0
+                                "/swagger-ui/**",       // Swagger UI
+                                "/swagger-ui.html",     // Página principal de Swagger UI
+                                "/swagger-resources/**",
+                                "/webjars/**")
+                        .permitAll()
+
+
+
+UNA VEZ TENGAMOS ACCESO DEBEMOS CONFIGURAR NUESTRO SWAGGER:
+
+Creamos una clase que se llame SwaggerConfig, TODO se configurara con anotaciones, nada se hará dentro del método
+
+Primero usamos @OpenAPIDefinition y dentro de los paréntesis ponemos todo lo que son las configuraciones:
+
+ @OpenAPIDefinition(
+	info = @Info(
+		title = "titulo del swagger",
+		description = "descripción,
+		termsOfService = "url de términos y condiciones",
+		versión = "1.0.0" //versión 
+		contact = @Contact( //información de creador
+				name = "mi nombre",
+				url = "pagina de contacto",
+				email = "mi email"
+				)
+		),
+		servers = { //configuramos los servers 
+			@Server(
+				description = "Nombre server",
+				url = "http://localhost:8080",
+
+				),
+			@Server(
+				description = "Server product",
+				url = "https:aksaks.com",
+
+				)
+
+			},
+//ponemos la security de abajo security = @SecurityRequirement(
+					name = "mismoNameDeAbajo"
+					)
+)
+
+Por fuera de esta anotación, configuramos el security
+
+@SecurityScheme(
+	name = "namee",
+	description="descriptiiioooon",
+	type = SecuritySchemeTye.HTTP //HTTP se trabaja con token
+	paramName = HttpHeaders.AUTHORIZATION,
+	in = SecuritySchemeIn.HEADER //donde va el token,
+	scheme = "bearer",
+	bearerFormat = "JWT"
+)
+
+
+
+ESTA ES LA CONFIGURACION BASICA DE SWAGGER, PERO SI QUEREMOS DETALLAR MÁS TAMBIEN PODEMOS DOCUMENTAR CADA CONTROLLER
+
+Vamos al controlador y ponemos
+
+@Tag(
+	name = "nameController",
+	description = "descr",
+
+)
+AHORA PODEMOS TAMBIEN DOCUMETNAR CADA METODO DE ESE CONTROLLER
+
+Sobre cada controller ponemos
+
+@Operation(
+	sumary="nombre",
+	description="description",
+	tags = {"palabraclave"} //lista de palabras claves
+	requestBody = @RequestBody //!requesBody de swager,no sb(
+			description= " ",
+			required = true,
+		
+			)
+)
+
+
+
+-------------------------------------------------
+
+CONSULTAS 
+
+JPQL:
+
+Ésto es igual que sql, pero trabajando con las clases
+
+las palabras reservadas son las mismas, SELECT INSERT WHERE, TODO ESTO
+
+La diferencia es a la hora de referirnos a atributos y tablas
+
+Por ejemplo SELECT u FROM Users u
+
+CON SINTAXIS, tambien podemos realizar consultas por sintaxis del metodo
+
+
+---------------------------------------------
+
+AUDITORIA
+
+Creamos una entidad, la cual va a contener el createdAr y el uodatedad, la clase se llamara Audit
+
+dentro de esta la marcamos con @Embeddable
+
+y creamos los w atributos
+@Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+Luego creamos getters y setters
+
+Por ultimo entramos con los ciclos de vida, entonces aca debemos indicar los métodos que modificaran los valores a los atributos
+
+  @PrePersist //va a hacer algo antes de guardarse
+    public void prePersist(){
+        System.out.println("prePersist");
+        this.createdAt = LocalDateTime.now(); //SE ASIGNA AL CREAR LA INSTANCIA
+    }
+
+    @PreUpdate //va a hacer algo antes de guardarse
+    public void preUpdate(){
+        System.out.println("preUpdate");
+        this.updatedAt = LocalDateTime.now();  //SE ASIGNA CUANDO SE MODIFIQUE
+    } 
+
+
+LUEGO ESTA CLASE DEBERA SER USADA EN TODAS NUESTRAS ENTIDADES, PARA ESTO AÑADIMOS UN NUEVO ATRIBUTO EL CUAL SERÁ UNA ISNTANCIA DE LA CLASE DE Audit, SE DEBE MARCAR CON @Embedded
+
+   @Embedded
+    //LLAMAMOS LA AUDITORIA
+    private Audit audit = new Audit();
+
+
+
+
+-----------------------------------------------------------------------
+
+
+MANEJO DE ERRORES
+
+primero creamos una clase, la cual será como la estructura de nuestro error, se le pasan los atributos que se mostraram, como mensaje, error, estatus y fecha, se crean sus getters y setters
+
+Creación del controlador para atrapar las excepciones, este controlador se llama HandlerExceptionController y debe estar anotado con @RestControllerAdvice
+
+Luego cada método manejara uno o unos topos de errores, para esto anotamos el método con @ExcepcionHandler, dentro de los paréntesis metemos el nombre de la excepción que tira postman y .class, si son varias excepciones, ponemos unas llaves y metemos todo separado por,
+
+Luego procedemos a crear el método, debe retornar un responseEntity del tipo de la clase que es la estructura de nuestros errores
+
+Nombramos el método como deseemos y le ponemos que recibirá la excepción dentro de los paréntesis del método, para esto creamos una instancia así (Exception ex), ahora todo el error vendrá en ex
+
+Una vez realizado esto, crearemos una instancia dentro del método de la estructura del error, y por medio de setters, setearemos todos los valores que este necesita, como fecha, un mensaje personalizado, el status, que se puede poner el numero o sacándolo de HttpStatus.STATUS.value() y el mensaje que se saca de la excecpiom
+
+
+POR ULTIMo debemos devolver un response entity segudi del tipo del error y después del cuerpo
+
+return ResponseEntity.status(###).body(cuerpoDelError)
+
+return ResponseEntity.internalServerError().body(error) //diferente forma
+
+
+
+ESTAS EXCEPCIONES QUE ESTABAMOS CAPTANDO ERAN EXCEPCIONES DE SPRINGBOOT, PERO TAMBIEN PODEMOS TENER NUESTRAS EXCEPCIONES PERSONALIZADAS
+
+Para esto creamos un package Excepcions, y dentro irían todas
+
+Nombre: el nombre debe comenar como nosotros aueramos pero deben terminar en Exception
+
+Esa clase debe extender de RuntimeException y dentro creamos un constructor que reciba un mensaje y con un super lo pase al padre 
+
+public class UserNotFoundException extends RuntimeException{
+    public UserNotFoundException(String message){
+        super(message); //PASAMOS EL MENSAJE RECIBIDO AL PADRE DEL QUE ESTAMOS HEREDANDO
+    }
+}
+
+
+
+LOS ERRORES DE SPRINGBOOT, SE LANZARAN AUTOMATICAMENTE, SE CAPTARAN Y SE MANEJARAN, PERO DEBEMIS INDICAR CUANDO SE LANZARA NUESTRO ERROR CREADO, PARA ESTO USAMOS CONIDICONALES Y TODAS ESTAS COSAS, PERO LA IDEA ES QUE SE LANCEN EN EL CONTOLADOR, PARA ESTO ES BUENO TRABAJAR CON EL OPTIONAL DESDE EL SERVICE, YA QUE EL OPTIONAL NOS VA A PERMITIR POR EJEMPLO VER SI UN USUARIO ES NULL Y ESE TIPO DE COSAS
+
+SIMPLEMENTE YA EN EL CONTROLADOR VERIFICAMOS LA EXISTENCIA DE ESE OPTIONAL, ENTONCES PODEMOS PONER LAS COSAS DE LA SIGUIENTE MANERA: Si lo encuentra lo devuelve, sino lanza el error
+
+ElementoOptional.orElseThrow(() -> new ExcepcionCreadaPorMiException(pasamos mensaje))
+
+
+lo que hace esto es instanciar la excepción que nosotros creamos y la lanza, y debemos pasar el mensaje
+
+
+ESTA EXCEPCION SIMPLEMENTE TAMBIEN UNA VEZ LANZADA LA PODEMOS MANEJAR CON LOS CONTROLLERS DE LOS ERRORS
+
+
+
+-------------------------------------------
+MAPPERS
+
+DEBEMOS INSTALAR LA DEPENDENCIA DE MODELMAPPER O MAPSTRUCT(debemos añadir el plugin)
+
+<dependency>
+  <groupId>org.modelmapper</groupId>
+  <artifactId>modelmapper</artifactId>
+  <version>3.0.0</version>
+</dependency> 
+
+
+Luego creamos un package llamado mappers dentro de un package DTO
+
+
+ENTONCES HAY 2 TIPOS DE MAPEO, CUANDO SE LLAMAN IGUAL:
+
+Tenemos el dto y el entity y sus atributos se llaman igual, entonces podemos simplemente instanciar el ModelMapper: ModelMapper modelMapper = new ModelMapper();
+
+después decir que Dto dto = modelMapper.map(instanciaEntity, Dto.class)
+
+indicamos que pasaremos la instancia de la entidad a tipo dto, y se guarda en una instancia de Dto
+
+
+
+CUANDO LOS NOMBRES DE ATRIBUTOS SON DIFERENTES DE LOS DEL ENTITY EN EL DTO
+
+instanciar el ModelMapper: ModelMapper modelMapper = new ModelMapper();
+
+PARA ESTO DEBEMOS CREAR UN MAPEO PERSONALIZADO
+
+	//tipos de datos
+Ponemos: TypeMap<Entity, Dto> propertyMapper = modelMapper.createTypeMap(claseEntity.class, claseDTO.class);
+
+//iniciamos con el mapeo personalizado
+propertyMapper.addMapping(ClassEntity::GETAtributo, ClaseDTO::SETAtributo)  //de esta forma estamos inidcando que un atrributo de la clase enity mapea al otro atributo de la clase dto
+
+
+Lo único que faltaría sería mapear cada uno de los atributos de entity con los de dto
+
+Por ultimo, para hacer la transformación, debemos
+
+crear una instancia del Dto y hacer lo siguiente DtoClase dtoInstancia = propertyMapper.map(personEntity)
+
+
+
+
+
+
+
+
