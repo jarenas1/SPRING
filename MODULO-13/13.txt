@@ -1,0 +1,224 @@
+JWT Y SECURITY
+
+jwt: Es un token creado con una palabra creada, el cual se asigna a un usuario al logearse, este tiene un tiempo de vida, trae todos los datos del usuario y SIRVE PARA VALIDAR EL USUARIO Y PERMITIRLE HACER CONSULTAS
+
+
+Para implementar esto, cogeremos un proyecto con un endpoint, y crearemos la tabla de usuario y la tabla de roles, estas entidades deben tener sus atributos, y DEBEN ESTAR RELACIONADAS COMO MANYTOMANY, YA QUE LOS USUARIOS PUEDEN TENER VARIOS ROLES, Y UN ROL PUEDE TENER VARIOS USUARIOS
+
+Las tablas no tienen relación bidireccional, ya que solo necesitamos asignarle roles al usuario, no al reves. De este mismo modo por eso no se tuene activado el oncascade, ya que nosotros tenemos cosas que no se deben borrar  
+
+Para asignarle a un usuario también el rol de admin, por medio de un atributo añadimos true o false, de este modo si es admin true se asigna admin y si no solo se deja user
+
+ESTE CAMPO NO SE DEBE AÑADIR A LA BASE DE DATOS, POR ENDE LO MARCAMOS CON @Transient, que inidica que no entra este atributo en la persistencia 
+
+CREAMOS UN METODO PERSONALIZADO QUE POR EL NOMBRE TRAIGA LOS ROLES
+
+CREAMOS UN PACKAGE PARA LA CONFIGURACION DE SECURITY
+
+AÑADIMOS SECURITY AL POM
+
+
+Aca creamos una clase anotada con configuration, para codificar la contraseña
+
+Creamos un método para codificar la contraseña, por medio de PasswordEncoder
+
+POR ULTIMO LO ANOTAMOS CON @Bean PARA AÑADIRLO AL CONTENEDOR Y PODERLO INYECTAR
+
+
+
+AHORA VAMOS AL SERVICE A IMPLEMENTAR TODO Y ENCRIPTAR LA CONTRASEÑA
+
+Como tenemos un save, para crear un usuario, debemos poder Traer el rol y encriptar contraseña
+
+POR ESTA RAZON INYECTAMOS EL REPO DE ROL, PARA ACCEDER AL METODO CREADO DE TRAER ROL POR NOMBRE
+
+E INYECTAMOS EL BEAN CREADO DE ENCRIPTAR PASSWORD
+
+INICIAREMOS IMPLEMENTANDO ESTO EN EL SAVE
+
+PARA ESTO POR EL METODO DE BUSCAR POR EL NOMBRE TRAEMOS LOS ROLES CON UN OPTIONAL 1, PRIMERO EL USER, EL CUAL SIEMPRE VA, ENTONCES SE LLAMA Y SE AÑADE A UNA LISTA DE TIPO ROLE
+
+DESPUES SE VERIFICA SI EL ATRIBUTO QUE SE CREO EN EL USUARIO PARA VERIFICAR SI ES ADMIN, ESTA EN TRUE, SI ESTA PRESENTE SE AÑADE TAMBIEN A LA LISTA DE ROLES, Y POR ULTIMO SE SETEA ESTA LISTA AL USUARIO
+
+------------
+
+UNA VEZ SETEADA ENCRIPTAREMOS LA CONTRASEÑA:
+
+PARA ESTO USAREMOS EL BEAN QUE INYRCTAMOS DE PASSWORD ENCODER
+
+
+-------------------
+
+UNA VEZ TENGAMOS TODO ESTO SEGUIRA CREAR EL CONTROLLER
+
+EN ESTE MANEJAREMOS EL TEMA DE LOS ERRORES Y LAS VALIDACIONES
+
+
+PARA PODER HACER USO DE TODOS ESTOS ENDPOINTS, DEBEMOS CONFIGURAR EL SECURITY, YA QUE INICIALMENTE AL AÑADIR EL SPRING SECURITY, ENVOLVERA TODO EL PROGRAMA, DEBEMOS EN ESTA CONFIGURACION, DEFINIR QUE USUARIOS PODRAN USAR QUE ENDPOINTS POR MEDIO DEL ROL DEL JWT Y ESO.
+
+
+Para esto vamos a nuestra clase de configuración del secutiry a implementar los filtros de cadena, este consistirá en decir que ritas se protegerán y cuales serán de acceso publico, este captara un HttpSecurity y realizara sus verificaciones internas, ESTE DEBE SER ANOTADO COMO UN BEAN
+
+En este security filterchaim, podemos poner VARIAS RUTAS, INDICANDO LOS METODOS publicos
+
+FILTRAR DATOS QUE SE MUESTRAN EN EL JSON ---------
+
+Esto podría ser un reemplazo a los dtos de response, ya que por medio de esto podemos devolver jsons con los datos que deseemos
+
+Para hacer esto debemos marcar con la anotación @JsonProperty() los elementos que no deseemos que se muestre
+
+Dentro de la anotación debemos poner acces = JsonPropery.Acces.WRITE_ONLY esto solo nos permitirá usar el atributo al hacer una request pero no una petición 
+
+
+
+
+-------------------------------
+
+IMPLEMENTACION DE LA RELACION BIDIRECCIONAL
+
+Le diermos a los roles que están relacionados con los usuarios
+
+Ponemos el manyToMany y como en la parte anterior manejamos la tabla, en este campo dentro de la anotación ebemos indicar el mappedBy, es decir la el nombre de la instancia que se creo para la lista en la otra clase
+
+
+ACA SE NOS PRESENTA UN GRAN ERROR:
+
+A la hora de devolver el json, se va a devolver cíclicamente, debido a que entraría por ejemplo a los roles, luego a los usuarios, lugo a los roles del usuario y asi sucesivamente, para evirar esto, debemos marcar las relaciones con @JsonIgnoreProperties({jsonAignorar}) Y YA POR MEDIO DE ESA LLAVE, CUANDO LLEGUE AHI LOS VA A IGNORAR
+
+
+
+-------------------------
+
+CREAREMOS UN COMPONENTE QUE PERMITA BUSCAR AL USUARIO POR USERNAME AL HACER LOGIN     ES SUPER IMPORTANTE
+
+
+Para este componente, creamos un nuevo servicio, RECORDAR ANOTAR CON @Service, a este le inyectamos el userRepository y en userRepository tenemos que tener creado un método que busque por username
+
+Este servicio debe implementar UserDetailsService, y debemos implementar el método
+
+Dentro de este método recibitemos un username automáticamente, este username lo captaremos y lo enviaremos al método e buscar por username, con el optional verificamos si existe o no tirando un error en caso de que no, y si existe lo obtenemos 
+
+Luego debemos crear una lista de authorities, para esto obtenemos la lista de roles del usuario y la transofrmamos con un apiStream a ese tipo de lista
+
+Luego retornamos una INSTANCIA DE LA CLASE USER QUE VIENE DE SECURITY!!!!,
+En esta instancia pasamos como atributos todo lo del usuario como contraseña, correo, y esas cosas y DEBEMOS PASAR 3 TRUE Y POR ULTIMO PASAMOS LA LISTA CREADA ANTERIORMENTE
+
+
+
+-----------
+
+FILTER
+
+Ahora crearemos un filtro para verificar si los datos anteriores coinciden con la base de datos
+
+
+
+---------------------------------
+IMPLEMENTACION DEL JWT
+
+vamos a la pagina de jwt y le damos en versiones, filtramos por java y escogemos la mas conocida
+
+Le damos en ver repo y en el readme, encontraremos la dependency que debemos añadir al pom
+
+Luego en el archivo creado anteriormente, debemos añadir un nuevo método también sobreEscrito, 
+
+Debemos crear en la parte superior de la clase un atributo que contendrá la clave secreta
+
+En el método lo que haremos será por medio del authResult, que se la autenticación del usuario si es exitosa, crar una instancia de un USER DE SECIRITY
+
+A este user se le extraerá el nombre de usuario, y abajo se creara el token de este usuario, pasando el username como atributo al token
+
+por ultimo solo devolvemos lo que es el token en el header y creamos un map, para después transofrmarlo en un json y devolverlo también
+
+
+AL TOKEN TAMBIEN LE PODEMOS AÑADIR FECHA DE EXPIRACION, en la parte donde le estamos metiendo el contenido al token, en el String token, le ponemos también con un . El .expiration(), a este le debemos meter la fecha actual en ms y le sumamos un tiempo de duración en ms también
+
+También podemos añadir aca la fecha de creación, con un issuedAt() y ponemos un new Date()
+
+Y POR ULTIMO, SI DESEAMOS AÑADIR ATRIBUTOS AL TOKEM, LOS CUALES NO EXISTEN NORMALMENTE COMO LOS ROLES, DEBEMOS AÑADIRLOS POR NEDO DE UN CLAIM. un claim es el encargado de recibir una llave, valor y por medio de eso se le pasa el valor al token, PARA AÑADIR LOS ROLES LOS PASAMOS A JSON PRIMERO POR MEDIO DE UN OBJECT MAPPER
+
+
+YA EL QUE CREAMOS FUE PARA UNA AUTENTICACION EXITOSA, AHORA DEBEMOS CREAR UNO PARA UNA VALIDACION NO EXITOSA
+
+Override el método unsuccesfulAuthentication
+En este método solo crearemos un map, lo convertimos a JSON Y lo devolvemos
+
+
+
+----------------------------
+
+CONFIGURAR EL FILTRO
+
+Este filtro se configurara en springsecconfig, se crea un método que lo maneje y se añade ese método a los filtros como un filtro personalizado
+.addFilter(new JwtAuthenticationFilter(authenticationManager())) //AÑADIMOS EL FILTRO CREADO ARRIBA PARA EL JWT
+
+
+-------------------------------------
+
+En este pundo ya deberíamos estar recibiendo un JWT cuando deseemos autenticarnos, por lo que nos toca ahora proteger las rutas y que sean accesibles por medio del TOKEN
+
+PRIVACIDAD Y VALIDACION DE RUTAS CON TOKEN
+
+Para esto debemos crear otro filtro, actualmente tenemos el filtro que verifica que el usuario exista, y nos devuelve el toke, ahora Vamos a hacer un filtro que verifiqie
+
+Tenemos que crear una nueva clase que extienda de authenticationManager,
+y creamos con corrección rápida un constructor, el cual recibe un authmanager y por medio de super se lo pasa al padre
+
+Para crear este filtro debemos extender de BasicAuthenticationFilter, impementando con override el doFilterInternal
+
+Inicialmente verificamos si el usuario no tiene token o su no tiene la palabra Bareer, y lo sacamos, todo esto ppor medio del atributo request del método, y le decimos que continue con os demás filtros
+
+Luego reemplazamos la palabra bareer del headero para que nos quede el token limpio
+
+Y con u tryCatch comenzamos a validar
+
+Primero traemos los clais con el fin de acceder a los valores, debemos OBTENER EL USERNAME Y LOS ROLES, Luego debemos pasar los roles a un tipo valido
+
+En esta conversión debemos crear otra clase creada en el package security La cual contendrá un constructor, por medio de un mixin aca mismo se le añadira ese constructor a la clase a la que estamos pasndo los roles para poderlo usar. Y ya luego los transformamos
+
+Una vez transformados los roles ahora si comenzamos con la auth, primero la  inicializamos pasando el username, el password en null y los roles
+
+Después creamos la autenticación
+
+por ultimo continuamos con los demás filtros
+
+
+Ya en el CATCH, manejamos un error simple por medio de un map, lo transofrmamos a json y lo devolvemos
+
+
+-----------------------------------------------------------
+
+REGLAS DE SEGURIDAD
+
+Ya tenemos casi todo listo, solo nos faltaría el tema de dar reglas, es decir de definir a donde acceden los roles, etc
+
+Para esto iresmos AL ARCHIVO SPRING SECURITY CONFIG, más específicamente en el securityfilterChain en la parte de las rutas
+
+Declaramos la ruta  .requestMatchers(HttpMethod.POST,"api/users/register")
+
+y después de la ruta, ponemos .hasAny, hasRole, el PRIMERO RECIBE UNA LISTA DE ROLES NECESARIAS, Y EL SEGUNDO UN SOLO ROL
+
+y YA SIMPLEMENTE LE PASAMOS EL ROL DENTRO E LOS PARENTESIS
+
+!!!!!IMPORTANTE, CUANDO CREAMOS LOS ROLES LOS NOMBREAMOS ROLE_NOMBRE,
+PERO EN ESTE CASO CUANDO PASEMO EL NOMBRE DEL ROL, NO PONEMIS ROLE_ SI NO QUE SOLO PONEMOS EL NOMBRE, YA QUE SPRINGBOOT ELIMINA EL ROLE_
+
+TAMBIEN PODEMOS PASAR VARIAS RUTAS EN UNA MISMA LINEA CON EL MISMO METODO HTTP Y CON VARIOS ROLES O UNO
+
+
+
+--------------------------------------------------
+
+CORS
+
+Los cors nos permiten acceder a los endpoints desde otro dominio, por ejemplo desde el frontend
+
+Para esto en nuestro controlaor debemos añadir una serie de configuraciones, estos van ubicados arriba de a anotación @RestController
+
+Ponemos @CrossOrigin() det¿ntro e los paréntesis ponemos origins = {"ruta1", "ruta2"....} aca van todas o la ruta que consumirá nuestro backend, SI NO TENEMOS UNA RUTA, NO PONEMOS ESTO SI NO QUE PONEMOS originPatterns = "*" lo cual permitirá que cualquier dominio acceda
+
+Luego de esto configramos en la clase de configuración del security, creamos un método para configurar estos cors, este método será un vean, y en el configuramos las rutas de los controllers, lo métodos y las cabeceras, luego indicamos en que rutas se implementara esta configuración, si ponemos /** se configurara en todas
+
+Luego esta configuración debemos añadirla a un filtro que debemos crear para que se ejecute siempre, esta se pasa a FilterRegistrationBean, dentro de un CorsFilter, y por ultimo retornamos
+
+APARTE DE ESTO DEBEMOS PASAR EL METODO DE CONFIGURACION A LA CONFIGURACION DEL SECUT¿RITY DONDE ESTABAMOS CONFIGURANDO LAS RUTAS, se pasa con .cors
