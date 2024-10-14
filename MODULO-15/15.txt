@@ -1,0 +1,72 @@
+Una vez finalizado el desarrollo de nuestro backend debemos desplegarlos, en este caso usaremos AWS
+
+Primero debemos generar el jar de nuestra aplicación,  para esto debemos asegurarnos de que la versión de nuestro sistema y la del pom (de java) sean las mismas
+
+Para generar el jar por primera vez ponemos en la consola el comando ./mvnw package, y si ya no es la primera vez debemos poner ./mvnw clean package para eliminar las versiones anteriores
+
+Una vez hecho esto debemos ver si dice BUILD SUCCES, Para saber si se compilo exitosamente, después en el target podremos ver ya nuestro .jar creado, para ejecutarlo, debemos poner en consola: java -jar ./targer/nombreDelProyecto-0.0.1-SNAPSHOT.jar
+
+
+TODO ESTO SE DEBE HACER DESDE UNA TERMINAL LOCAL, NO GIT BASH
+
+
+
+------------------------------------------------
+
+CREACION DE BASE DE DATOS EN AMAZON 
+
+Entramos a la pagina de aws, a la parte de productos/bases de datos y seleccionamos rds
+
+Aca seleccionamos en crear una base de datos y seleccionamos nuestro motor deseado, configuramos credenciales y presionamos en crear
+
+Una vez creada la base de datos en la nube, la configuramos en cuanto a seguridad para poder acceder a esta desde el workbench, y pasamos los datos de la base de datos anterior a la nueva, por medio de administration al lado izquierdo del panel y le damos en data export y seleccionamos las tablas
+
+Y ya en la nueva base de datos hacermos lo mismo pero seleccionamos import y seleccionamos la carpeta de la que se importara
+
+
+
+-------------------------------------------------
+
+CREACION DEL SERVIDOR
+
+Vamos a EC2 y creamos una nueva instancia, esta la configuramos indicando nombre, maquina y tidi eso, se recomienda amazon Linux, con el ami amazon Linux 2 ami
+
+Luego generamos un nuevo par de claves 
+
+para finalizar vamos también a los grupos de seguridad y ponemos publico la entrada y la salida y en la entrada creamos una nueva regla que permita el puerto 8080 por medio de un TCP personalizado
+
+---------------------------------------------------
+
+Conectar nuestro local con nuestra maquina virtual por medio de Powershell
+
+Para esto primero debemos instalar el par de llaves, luego vamos a instalar el cliente de ssh en powershell
+
+Una ve instalado el cliente por medio de la documentación de aws, entramos al lugar donde tenemos el par de claves y ejecutamos el siguiente comando ssh -i .\nombreDeSsh.pem ec2-user@rutaDeAws.com
+
+----------------------------------------------------
+
+DESCARGAR JAVA
+
+Para esto entramos a la documentación, bajamos, seleccionamos java, ahora debemos buscar la guía de instalación de Linux, ya que nuestra maquina virtual trabaja con este
+
+Luego desde powerSheell nos conectamos a la maquina virtual, moviéndonos a la carpeta donde esta la ssh y ejecutando el mismo comando de arriba 
+
+Una vez aca adentro verificamos la versión de java con java -versión
+
+Si no tiene nada, vamos a los comandos de la documentación y vamos instalando uno por uno
+
+una vez finalizadas las instalaciones verificamos que se nos instalo.
+
+
+-----------------------------------------------------
+
+AÑADIR NUESTRO JAR 
+
+Para esto debemos hacer el siguiente comando
+
+ scp -i C:\Users\juanj\OneDrive\Escritorio\ec2-backend-andres.pem  C:\Users\juanj\OneDrive\Escritorio\DESARROLLO\SPRING-BOOT\ANDRES-SPRING\MODULO-13\CRUD-SECURITY\target\CRUD-SECURITY-0.0.1-SNAPSHOT.jar ec2-user@ec2-3-133-98-194.us-east-2.compute.amazonaws.com:~/.
+
+En este indicamos donde esta a llave, luego el archivo que vamos a subir, luego generamos una coneccion con la maquina virtual y con los : indicamos donde se va a copiar este archivo, en este caso fue en el directorio raíz
+
+
+AHORA NOS CONECTAMOS CON LA MAQUINA VIRTUAL Y SIMPLEMENTE EJECUTAMOS CON java -jar NOMBREARCHVO
